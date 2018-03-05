@@ -70,8 +70,8 @@ public class CameraUtil {
     }
 
     public void setCameraView(CameraView cameraView) {
-        init();
         this.mCameraView = cameraView;
+        init();
     }
 
 
@@ -147,13 +147,15 @@ public class CameraUtil {
             mMuxer.stopRecording();
             outputPath = mMuxer.getOutputPath();
             Log.d(TAG, "stopRecording: outputPath = " + outputPath);
-            onRecordListener.onRecordSuccess(outputPath);
+//            onRecordListener.onRecordSuccess(outputPath);
             mMuxer = null;
             // you should not wait here
         }
         if (!StringUtils.isEmpty(outputPath)) {
-            uploadUtilInstance.init(outputPath);
-            uploadUtilInstance.beginUpload();
+            if (uploadUtilInstance != null) {
+                uploadUtilInstance.init(outputPath);
+                uploadUtilInstance.beginUpload();
+            }
         }
     }
 

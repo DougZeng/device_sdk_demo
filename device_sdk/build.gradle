@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName '1.0.0.0.1'
+        versionCode 3
+        versionName '1.0.0.0.2'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -47,4 +47,12 @@ dependencies {
     compile files('libs/lite-async-1.0.0.jar')
     compile files('libs/jeromq-0.4.3.jar')
     compile(name: 'libvlc-3.0.0-null', ext: 'aar')
+}
+
+task copyAAR(type: Copy) {
+    from 'build/outputs/aar'
+    into '../uvdemo/libs'
+}
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn(copyAAR)
 }

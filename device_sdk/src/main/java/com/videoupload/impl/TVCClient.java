@@ -22,6 +22,7 @@ import com.tencent.cos.xml.model.object.PutObjectRequest;
 import com.tencent.cos.xml.transfer.MultipartUploadService;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.tencent.qcloud.core.network.QCloudProgressListener;
+import com.videoupload.UploadConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,12 +50,12 @@ public class TVCClient {
     private UGCClient ugcClient;
     private TVCUploadListener tvcListener;
 
-    private int cosAppId;   //点播上传用到的COS appid
-    private int userAppId;  //客户自己的appid，数据上报需要
+    private int cosAppId = UploadConfig.APPID;   //点播上传用到的COS appid
+    private int userAppId = UploadConfig.USERID;  //客户自己的appid，数据上报需要
     private String cosBucket;
     private String uploadRegion = "";
-    private String cosTmpSecretId = "";
-    private String cosTmpSecretKey = "";
+    private String cosTmpSecretId = UploadConfig.SECRET_ID;
+    private String cosTmpSecretKey = UploadConfig.SECRET_KEY;
     private String cosToken = "";
     private long cosExpiredTime;
 
@@ -115,7 +116,7 @@ public class TVCClient {
             try {
                 Map<String, ?> allContent = mSharedPreferences.getAll();
                 //注意遍历map的方法
-                for(Map.Entry<String, ?>  entry : allContent.entrySet()){
+                for (Map.Entry<String, ?> entry : allContent.entrySet()) {
                     JSONObject json = new JSONObject((String) entry.getValue());
                     long expiredTime = json.optLong("expiredTime", 0);
                     // 过期了清空key
@@ -143,11 +144,11 @@ public class TVCClient {
     // 通知上层上传失败
     private void notifyUploadFailed(final int errCode, final String errMsg) {
         mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    tvcListener.onFailed(errCode, errMsg);
-                }
-            });
+            @Override
+            public void run() {
+                tvcListener.onFailed(errCode, errMsg);
+            }
+        });
     }
 
     // 通知上层上传进度
@@ -222,6 +223,7 @@ public class TVCClient {
 
     /**
      * 取消（中断）上传。中断之后恢复上传再用相同的参数调用uploadVideo即可。
+     *
      * @return 成功或者失败
      */
     public void cancleUpload() {
@@ -284,7 +286,7 @@ public class TVCClient {
 
             String message = "";
             try {
-                message = new String(jsonRsp.optString("message", "").getBytes("UTF-8"),"utf-8");
+                message = new String(jsonRsp.optString("message", "").getBytes("UTF-8"), "utf-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -368,7 +370,7 @@ public class TVCClient {
             }
         });
 
-        putObjectRequest.setSign(600,null,null);
+        putObjectRequest.setSign(600, null, null);
         cosService.putObjectAsync(putObjectRequest, new CosXmlResultListener() {
             @Override
             public void onSuccess(CosXmlRequest cosXmlRequest, CosXmlResult cosXmlResult) {
@@ -379,9 +381,9 @@ public class TVCClient {
             @Override
             public void onFail(CosXmlRequest cosXmlRequest, CosXmlClientException qcloudException, CosXmlServiceException qcloudServiceException) {
                 StringBuilder stringBuilder = new StringBuilder();
-                if(qcloudException != null){
+                if (qcloudException != null) {
                     stringBuilder.append(qcloudException.getMessage());
-                }else {
+                } else {
                     stringBuilder.append(qcloudServiceException.toString());
                 }
 
@@ -436,7 +438,7 @@ public class TVCClient {
                         resumeData.uploadId = uploadId;
                     } else {
                         InitMultipartUploadRequest initMultipartUploadRequest = new InitMultipartUploadRequest(cosBucket, cosVideoPath);
-                        initMultipartUploadRequest.setSign(600,null,null);
+                        initMultipartUploadRequest.setSign(600, null, null);
                         InitMultipartUploadResult initMultipartUploadResult = cosService.initMultipartUpload(initMultipartUploadRequest);
                         uploadId = initMultipartUploadResult.initMultipartUpload.uploadId;
                         setResumeData(uploadInfo.getFilePath(), vodSessionKey, uploadId);
@@ -447,29 +449,29 @@ public class TVCClient {
                     setResumeData(uploadInfo.getFilePath(), "", "");
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, 0, "", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
 
-                    Log.w(TAG,result.accessUrl);
+                    Log.w(TAG, result.accessUrl);
                     Log.i(TAG, "uploadCosVideo finish:  cosBucket " + cosBucket + " cosVideoPath: " + cosVideoPath + "  path: " + uploadInfo.getFilePath() + "  size: " + uploadInfo.getFileSize());
 
                     startUploadCoverFile(result);
                 } catch (CosXmlClientException e) {
-                    Log.w(TAG,"CosXmlClientException =" + e.getMessage());
+                    Log.w(TAG, "CosXmlClientException =" + e.getMessage());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "HTTP Code:" + e.getMessage(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
                     if (!TVCUtils.isNetworkAvailable(context) && busyFlag) {
                         notifyUploadFailed(TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "cos upload video error:" + e.getMessage());
                         setResumeData(uploadInfo.getFilePath(), "", "");
                     }
                 } catch (CosXmlServiceException e) {
-                    Log.w(TAG,"QCloudServiceException =" + e.toString());
+                    Log.w(TAG, "QCloudServiceException =" + e.toString());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "HTTP Code:" + e.getMessage(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
                     // 临时密钥过期，重新申请一次临时密钥，不中断上传
-                    if(e.getErrorCode().equalsIgnoreCase("RequestTimeTooSkewed")) {
+                    if (e.getErrorCode().equalsIgnoreCase("RequestTimeTooSkewed")) {
                         getCosUploadInfo(uploadInfo, vodSessionKey);
                     } else {
                         notifyUploadFailed(TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "cos upload video error:" + e.getMessage());
                         setResumeData(uploadInfo.getFilePath(), "", "");
                     }
                 } catch (Exception e) {
-                    Log.w(TAG,"Exception =" + e.toString());
+                    Log.w(TAG, "Exception =" + e.toString());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "HTTP Code:" + e.getMessage(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
                     notifyUploadFailed(TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "cos upload video error:" + e.getMessage());
                     setResumeData(uploadInfo.getFilePath(), "", "");
@@ -560,13 +562,14 @@ public class TVCClient {
 
     /**
      * 数据上报
+     *
      * @param reqType：请求类型，标识是在那个步骤
      * @param errCode：错误码
      * @param errMsg：错误详细信息，COS的错误把requestId拼在错误信息里带回
      * @param reqTime：请求时间
      * @param reqTimeCost：耗时，单位ms
-     * @param fileSize :文件大小
-     * @param fileType :文件类型
+     * @param fileSize                                :文件大小
+     * @param fileType                                :文件类型
      */
     void txReport(int reqType, int errCode, String errMsg, long reqTime, long reqTimeCost, long fileSize, String fileType, String fileName) {
         try {
@@ -645,7 +648,7 @@ public class TVCClient {
             try {
                 // vodSessionKey、uploadId为空就表示删掉该记录
                 String itemPath = filePath;
-                if ( StringUtils.isEmpty(vodSessionKey) || StringUtils.isEmpty(uploadId)) {
+                if (StringUtils.isEmpty(vodSessionKey) || StringUtils.isEmpty(uploadId)) {
                     mShareEditor.remove(itemPath);
                     mShareEditor.commit();
                 } else {

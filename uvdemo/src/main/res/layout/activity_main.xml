@@ -19,10 +19,24 @@
         android:text="stop" />
 
 
-    <com.wesine.device_sdk.videouploadlib.CameraView
-        android:id="@+id/cameraView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center" />
+        android:orientation="vertical">
+
+
+        <com.wesine.device_sdk.videouploadlib.CameraView
+            android:id="@+id/cameraView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center" />
+
+        <com.wesine.device_sdk.vlclib.view.WesineGLSV
+            android:id="@+id/player"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 </LinearLayout>

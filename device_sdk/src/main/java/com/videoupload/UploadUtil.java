@@ -3,7 +3,8 @@ package com.videoupload;
 
 import android.util.Log;
 
-import com.wesine.device_sdk.utils.InitContext;
+import com.litesuits.android.async.TaskExecutor;
+import com.wesine.device_sdk.utils.Device;
 import com.wesine.device_sdk.utils.ZeroMQUtil;
 
 /**
@@ -18,7 +19,7 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
     private String mVideoPath;
 
     private String paramSignature = "";
-    private String customKey = "10022853";
+//    private String customKey = UploadConfig.CUSTOMKEY;
     private static UploadUtil mUploadUtil;
     private OnPublishResultListener onPublishResultListener;
 
@@ -39,7 +40,9 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
 
     public void init(String videoPath) {
         this.mVideoPath = videoPath;
+        System.out.println(System.currentTimeMillis());
         paramSignature = SignatureUtil.getSignatureUtil().getSignature();
+        System.out.println(System.currentTimeMillis());
     }
 
     public void pauseUpload() {
@@ -63,7 +66,7 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
 
     public void beginUpload() {
         if (mVideoPublish == null) {
-            mVideoPublish = new TXUGCPublish(InitContext.getContext(), customKey);
+            mVideoPublish = new TXUGCPublish(Device.getApp(), UploadConfig.CUSTOMKEY);
             mVideoPublish.setListener(this);
         }
 
@@ -95,14 +98,21 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
     }
 
     @Override
-    public void onPublishComplete(TXUGCPublishTypeDef.TXPublishResult result) {
+    public void onPublishComplete(final TXUGCPublishTypeDef.TXPublishResult result) {
         Log.d(TAG, "onPublishComplete: " + result.retCode + " Msg:" + (result.retCode == 0 ? result.videoURL : result.descMsg));
         if (result.retCode == 0) {
-            ZeroMQUtil zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
-            zeroMQUtil.sendPack(result.videoURL, result.coverURL);
-            onPublishResultListener.onSuccess(result);
+            TaskExecutor.start(new Runnable() {
+                @Override
+                public void run() {
+                    ZeroMQUtil zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
+                    zeroMQUtil.init("1001", "192.168.1.207","9999");
+                    zeroMQUtil.sendPack(result.videoURL, result.coverURL);
+                }
+            });
+
+//            onPublishResultListener.onSuccess(result);
         } else {
-            onPublishResultListener.onFailed();
+//            onPublishResultListener.onFailed();
         }
     }
 }

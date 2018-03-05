@@ -21,8 +21,8 @@ public class ZeroMQUtil {
     private static final String TAG = "ZeroMQUtil";
     public static ZeroMQUtil mZeroMQUtil;
 
-    private ZMQ.Context context = null;
-    private ZMQ.Socket subscriber = null;
+//    private static ZMQ.Context context = null;
+//    private static ZMQ.Socket subscriber = null;
 
     private String mAddr = "tcp://192.168.1.194:9999";
 
@@ -31,8 +31,6 @@ public class ZeroMQUtil {
     private boolean heartbeatFlag = false;
 
     private ZeroMQUtil() {
-        context = ZMQ.context(1);
-        subscriber = context.socket(ZMQ.DEALER);
     }
 
     public static ZeroMQUtil getmZeroMQUtil() {
@@ -46,21 +44,19 @@ public class ZeroMQUtil {
         return mZeroMQUtil;
     }
 
-    public void init(String egID, String addr) {
+    public void init(String egID, String ip, String port) {
         if (StringUtils.isEmpty(egID)) {
             return;
         }
-        boolean b = subscriber.setIdentity(egID.getBytes());//FROM duodian
-        System.out.println("setIdentity = " + b);
-//        Log.i(TAG, "setIdentity = " + b);
-        if (!b) {
+        if (StringUtils.isEmpty(ip)) {
             return;
         }
-        if (StringUtils.isEmpty(addr)) {
+        if (StringUtils.isEmpty(port)) {
             return;
         }
+
+        mAddr = String.format("tcp://%s:%s", ip, port);
         mEgID = egID;
-        mAddr = addr;
     }
 
     /*1 single send online*/
@@ -72,13 +68,21 @@ public class ZeroMQUtil {
      * @return
      */
     public boolean heartbeat() {
+        ZMQ.Context context = ZMQ.context(1);
+        ZMQ.Socket subscriber = context.socket(ZMQ.DEALER);
         try {
-//            subscriber.subscribe("");
+            boolean b = subscriber.setIdentity(mEgID.getBytes());//FROM duodian
+            System.out.println("setIdentity = " + b);
+//        Log.i(TAG, "setIdentity = " + b);
+            if (!b) {
+                return false;
+            }
+
             boolean connect = subscriber.connect(mAddr);// 注意，这里必须是服务器的IP地址或DNS Name
             System.out.println("connect = " + connect);
 //            Log.i(TAG, "connect = " + connect);
             if (!connect) {
-                return false;
+                return subscriber.connect(mAddr);
             }
             boolean sendMore = subscriber.sendMore("POS");//LPS SERVER
             System.out.println("sendMore = " + sendMore);
@@ -98,10 +102,10 @@ public class ZeroMQUtil {
                 return false;
             }
             heartbeatFlag = true;
-            String message = new String(subscriber.recv(0));
-            if (!StringUtils.isEmpty(message)) {
-                System.out.println(message);
-            }
+//            String message = new String(subscriber.recv(0));
+//            if (!StringUtils.isEmpty(message)) {
+//                System.out.println(message);
+//            }
             subscriber.close();
 //            context.term();
 //            subscriber.disconnect(mAddr);
@@ -137,7 +141,18 @@ public class ZeroMQUtil {
         if (StringUtils.isEmpty(capvideourl) || StringUtils.isEmpty(cappictureurl)) {
             return false;
         }
+        ZMQ.Context context = ZMQ.context(1);
+        ZMQ.Socket subscriber = context.socket(ZMQ.DEALER);
+
         try {
+
+            boolean b = subscriber.setIdentity(mEgID.getBytes());//FROM duodian
+            System.out.println("setIdentity = " + b);
+//        Log.i(TAG, "setIdentity = " + b);
+            if (!b) {
+                return false;
+            }
+
             boolean connect = subscriber.connect(mAddr);// 注意，这里必须是服务器的IP地址或DNS Name
             System.out.println("connect = " + connect);
 //            Log.i(TAG, "connect = " + connect);
@@ -174,12 +189,11 @@ public class ZeroMQUtil {
             if (!send) {
                 return false;
             }
-            String message = new String(subscriber.recv(0));
-            if (!StringUtils.isEmpty(message)) {
-                System.out.println(message);
-            }
+//            String message = new String(subscriber.recv(0));
+//            if (!StringUtils.isEmpty(message)) {
+//                System.out.println(message);
+//            }
             heartbeatFlag = true;
-//            message = new String(subscriber.recv(0));
             subscriber.close();
 //            subscriber.disconnect(mAddr);
 //            context.term();
@@ -192,6 +206,4 @@ public class ZeroMQUtil {
         }
         return true;
     }
-
-
 }

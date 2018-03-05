@@ -4,7 +4,10 @@ package com.videoupload;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.tencent.cos.xml.utils.StringUtils;
@@ -12,9 +15,11 @@ import com.videoupload.impl.TVCClient;
 import com.videoupload.impl.TVCConstants;
 import com.videoupload.impl.TVCUploadInfo;
 import com.videoupload.impl.TVCUploadListener;
+import com.wesine.device_sdk.utils.Device;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 /**
@@ -28,7 +33,7 @@ public class TXUGCPublish {
     private TXUGCPublishTypeDef.ITXVideoPublishListener mListener;
     private boolean mPublishing;
     private TVCClient mTVCClient = null;
-    private String mCustomKey = "10022853";
+    private String mCustomKey;
 
     public TXUGCPublish(Context context, String customKey) {
         mCustomKey = customKey;
@@ -81,7 +86,12 @@ public class TXUGCPublish {
             return TVCConstants.ERR_UGC_INVALID_VIDEO_FILE;
         }
 
-        String coverPath = "";
+        String coverPath = null;
+        try {
+            coverPath = getVideoThumb(param.videoPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (!StringUtils.isEmpty(param.coverPath)) {
             coverPath = param.coverPath;
             File file = new File(coverPath);
@@ -163,7 +173,7 @@ public class TXUGCPublish {
 
     public void canclePublish() {
         if (mTVCClient != null) {
-             mTVCClient.cancleUpload();
+            mTVCClient.cancleUpload();
         }
         mPublishing = false;
     }
@@ -180,35 +190,39 @@ public class TXUGCPublish {
     }
 
 
-    private String getVideoThumb(String videoPath) {
+    private String getVideoThumb(String videoPath) throws IOException {
         String strCoverFilePath = null;
+        MediaMetadataRetriever media = null;
+        FileOutputStream fOut = null;
         try {
             File videoFile = new File(videoPath);
             if (!videoFile.exists()) {
                 Log.w(TAG, "record: video file is not exists when record finish");
                 return null;
             }
-            MediaMetadataRetriever media = new MediaMetadataRetriever();
-            media.setDataSource(videoPath);
+            media = new MediaMetadataRetriever();
+            media.setDataSource(Device.getApp(), Uri.parse(videoPath));
             Bitmap thumb = media.getFrameAtTime(COVER_TIME);
-
-
             String fileName = "";
             int index = videoPath.lastIndexOf(".");
             if (index != -1) {
                 fileName = videoPath.substring(0, index);
             }
-
             strCoverFilePath = fileName + ".jpg";
             File f = new File(strCoverFilePath);
             if (f.exists()) f.delete();
-            FileOutputStream fOut = null;
+
             fOut = new FileOutputStream(f);
             thumb.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
             fOut.flush();
             fOut.close();
         } catch (Exception e) {
+            fOut.close();
+            media.release();
             e.printStackTrace();
+        } finally {
+            fOut.close();
+            media.release();
         }
         return strCoverFilePath;
     }

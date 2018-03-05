@@ -10,19 +10,19 @@ import com.wesine.device_sdk.utils.ZeroMQUtil;
 public class ZeroMQUtilTest {
     public static void main(String[] args) {
         final ZeroMQUtil zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
-        zeroMQUtil.init("1001","tcp:/192.168.1.207:9999");
+        zeroMQUtil.init("1001", "192.168.1.207", "9999");
 
         TaskExecutor.startTimerTask(new Runnable() {
             @Override
             public void run() {
-                boolean heartbeat = zeroMQUtil.heartbeat();
+                zeroMQUtil.heartbeat();
             }
         }, 3000, 1000 * 60 * 10);
 
         TaskExecutor.start(new Runnable() {
             @Override
             public void run() {
-                boolean b = zeroMQUtil.sendPack("https://www.baidu.com/", "https://www.baidu.com/");
+                zeroMQUtil.sendPack("https://www.baidu.com/", "https://www.baidu.com/");
             }
         });
     }

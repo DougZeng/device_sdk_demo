@@ -47,7 +47,7 @@ public class RtspUtil {
             options.add("--aout=opensles");
             options.add("--audio-time-stretch"); // time stretching
             options.add("-vvv"); // verbosity
-            mVlc = new LibVLC(InitContext.getContext(), options);
+            mVlc = new LibVLC(Device.getApp(), options);
 
             // Create media player
             mMediaPlayer = new MediaPlayer(mVlc);

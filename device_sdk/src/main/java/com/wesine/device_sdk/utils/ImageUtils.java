@@ -8,7 +8,7 @@ import java.io.File;
 
 public class ImageUtils {
     public static File getNewImageFile() {
-        File dir = CommonContext.getContext().getExternalFilesDir("image");
+        File dir = Device.getApp().getExternalFilesDir("image");
         if (!dir.exists() && !dir.mkdirs()) {
             return null;
         }
