@@ -40,7 +40,7 @@
    @Override
        public void onCreate() {
            super.onCreate();
-           InitContext.setContext(this);
+           Device.init(this);
        }
    ```
 
