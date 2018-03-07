@@ -23,6 +23,7 @@ import com.tencent.cos.xml.transfer.MultipartUploadService;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.tencent.qcloud.core.network.QCloudProgressListener;
 import com.videoupload.UploadConfig;
+import com.wesine.device_sdk.utils.ZeroMQUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,6 +83,8 @@ public class TVCClient {
     private String uploadId = null;
     private long fileLastModTime = 0;     //视频文件最后修改时间
     private boolean enableResume = true;
+    private ZeroMQUtil zeroMQUtil;
+
 
     /**
      * 初始化上传实例
@@ -99,6 +102,8 @@ public class TVCClient {
         this.enableResume = enableResume;
         this.customKey = customKey;
         clearLocalCache();
+        zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
+        zeroMQUtil.init("1001","192.168.1.194","9999");
     }
 
     /**
@@ -364,7 +369,7 @@ public class TVCClient {
         putObjectRequest.setProgressListener(new QCloudProgressListener() {
             @Override
             public void onProgress(long progress, long max) {
-                Log.d(TAG, "uploadCosCover->progress: " + progress + "/" + max);
+//                Log.d(TAG, "uploadCosCover->progress: " + progress + "/" + max);
                 // 上传封面无进度
                 //tvcListener.onProgress(currentSize, totalSize);
             }
@@ -546,6 +551,7 @@ public class TVCClient {
             JSONObject videoObj = dataRsp.getJSONObject("video");
             String playUrl = videoObj.getString("url");
             videoFileId = dataRsp.getString("fileId");
+            zeroMQUtil.sendUploadResult(playUrl,coverUrl);
             notifyUploadSuccess(videoFileId, playUrl, coverUrl);
 
             txReport(TVCConstants.UPLOAD_EVENT_ID_UPLOAD_RESULT, 0, "", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());

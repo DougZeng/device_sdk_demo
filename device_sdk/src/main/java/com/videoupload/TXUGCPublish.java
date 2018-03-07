@@ -4,10 +4,8 @@ package com.videoupload;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.tencent.cos.xml.utils.StringUtils;
@@ -16,10 +14,13 @@ import com.videoupload.impl.TVCConstants;
 import com.videoupload.impl.TVCUploadInfo;
 import com.videoupload.impl.TVCUploadListener;
 import com.wesine.device_sdk.utils.Device;
+import com.wesine.device_sdk.utils.TimeUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import static android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC;
 
 
 /**
@@ -27,13 +28,14 @@ import java.io.IOException;
  */
 public class TXUGCPublish {
     private static final String TAG = "TXVideoPublish";
-    private static final long COVER_TIME = 500 * 1000;
+    private static final long COVER_TIME = 100 * 1000;
     private Context mContext;
     private Handler mHandler;
     private TXUGCPublishTypeDef.ITXVideoPublishListener mListener;
     private boolean mPublishing;
     private TVCClient mTVCClient = null;
     private String mCustomKey;
+
 
     public TXUGCPublish(Context context, String customKey) {
         mCustomKey = customKey;
@@ -192,7 +194,6 @@ public class TXUGCPublish {
 
     private String getVideoThumb(String videoPath) throws IOException {
         String strCoverFilePath = null;
-        MediaMetadataRetriever media = null;
         FileOutputStream fOut = null;
         try {
             File videoFile = new File(videoPath);
@@ -200,9 +201,9 @@ public class TXUGCPublish {
                 Log.w(TAG, "record: video file is not exists when record finish");
                 return null;
             }
-            media = new MediaMetadataRetriever();
-            media.setDataSource(Device.getApp(), Uri.parse(videoPath));
-            Bitmap thumb = media.getFrameAtTime(COVER_TIME);
+            MediaMetadataRetriever media = new MediaMetadataRetriever();
+            media.setDataSource(Device.getApp().getApplicationContext(), Uri.parse(videoPath));
+            Bitmap thumb = media.getFrameAtTime(COVER_TIME, OPTION_CLOSEST_SYNC);//getFrameAtTime: videoFrame is a NULL pointer
             String fileName = "";
             int index = videoPath.lastIndexOf(".");
             if (index != -1) {
@@ -218,11 +219,7 @@ public class TXUGCPublish {
             fOut.close();
         } catch (Exception e) {
             fOut.close();
-            media.release();
             e.printStackTrace();
-        } finally {
-            fOut.close();
-            media.release();
         }
         return strCoverFilePath;
     }

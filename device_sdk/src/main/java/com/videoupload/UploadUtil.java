@@ -19,9 +19,12 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
     private String mVideoPath;
 
     private String paramSignature = "";
-//    private String customKey = UploadConfig.CUSTOMKEY;
+    //    private String customKey = UploadConfig.CUSTOMKEY;
     private static UploadUtil mUploadUtil;
     private OnPublishResultListener onPublishResultListener;
+
+    private ZeroMQUtil zeroMQUtil;
+
 
     private UploadUtil() {
 
@@ -43,6 +46,7 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
         System.out.println(System.currentTimeMillis());
         paramSignature = SignatureUtil.getSignatureUtil().getSignature();
         System.out.println(System.currentTimeMillis());
+        zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
     }
 
     public void pauseUpload() {
@@ -94,21 +98,22 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
 
     @Override
     public void onPublishProgress(long uploadBytes, long totalBytes) {
-        Log.i(TAG, "onPublishProgress: " + (int) (100 * uploadBytes / totalBytes));
+//        Log.i(TAG, "onPublishProgress: " + (int) (100 * uploadBytes / totalBytes));
     }
 
     @Override
     public void onPublishComplete(final TXUGCPublishTypeDef.TXPublishResult result) {
-        Log.d(TAG, "onPublishComplete: " + result.retCode + " Msg:" + (result.retCode == 0 ? result.videoURL : result.descMsg));
+//        Log.d(TAG, "onPublishComplete: " + result.retCode + " Msg:" + (result.retCode == 0 ? result.videoURL : result.descMsg));
         if (result.retCode == 0) {
-            TaskExecutor.start(new Runnable() {
-                @Override
-                public void run() {
-                    ZeroMQUtil zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
-                    zeroMQUtil.init("1001", "192.168.1.207","9999");
-                    zeroMQUtil.sendPack(result.videoURL, result.coverURL);
-                }
-            });
+//            zeroMQUtil.init("1001", "192.168.1.207", "9999");
+//            zeroMQUtil.getURLPack(result.videoURL, result.coverURL);
+//            TaskExecutor.start(new Runnable() {
+//                @Override
+//                public void run() {
+//                    zeroMQUtil.sendPack();
+//                }
+//            });
+
 
 //            onPublishResultListener.onSuccess(result);
         } else {

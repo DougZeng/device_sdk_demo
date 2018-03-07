@@ -54,7 +54,6 @@ public class TVCUtils {
     }
 
     //IMEI：
-    @SuppressLint("MissingPermission")
     public static String doRead(Context context) {
         String imei = "";
         try {

@@ -33,6 +33,7 @@
             android:gravity="center" />
 
         <com.wesine.device_sdk.vlclib.view.WesineGLSV
+            android:visibility="gone"
             android:id="@+id/player"
             android:layout_width="match_parent"
             android:layout_height="0dp"

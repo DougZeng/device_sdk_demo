@@ -28,7 +28,7 @@ import java.net.URL;
 
 /** 从服务器获取签名 signKey keyTime*/
 public class TVCNetworkCredentialProvider extends BasicLifecycleCredentialProvider {
-    static final String TAG = "TVCNetworkCredentialProvider";
+    static final String TAG = "CredentialProvider";
     static final String SVR_POST_URL = ""; //获取签名的服务器地址
     static final String SVR_RETURN_CODE  = "returnValue";
     static final String SVR_RETURN_MSG   = "returnMsg";
