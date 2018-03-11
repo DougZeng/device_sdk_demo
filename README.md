@@ -1,12 +1,10 @@
 
 
 #Feature
-1.check devices serial with cpyrt
 
+1. check devices serial with cpyrt
 2. record video from usb camera
-
 3. play rtsp stream
-
 
 ##Usage example
 
@@ -65,6 +63,7 @@
            vlcClient.onCreat();
 
        }
+   ```
 
 
        @Override
@@ -73,30 +72,32 @@
            cameraUtil.onResume();
            super.onResume();
        }
-
+    
        @Override
        protected void onPause() {
            vlcClient.onPause();
            cameraUtil.onPause();
            super.onPause();
        }
-
+    
        @Override
        protected void onDestroy() {
            vlcClient.onDestroy();
            super.onDestroy();
        }
-
+    
        public void record(View view) {
            cameraUtil.record();
        }
-
+    
        public void stop(View view) {
            cameraUtil.stopRecording();
        }
    ```
 
-   ​
+   
 
-   ​
+   
 
+
+   ```
