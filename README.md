@@ -1,10 +1,11 @@
 
 
 #Feature
+1.check devices serial with cpyrt
 
-1. record video from usb camera
+2. record video from usb camera
 
-2. play rtsp stream
+3. play rtsp stream
 
 
 ##Usage example
