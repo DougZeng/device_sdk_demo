@@ -11,6 +11,7 @@ import java.util.Locale;
 public class TimeUtil {
 
     private static final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
+    private static final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public static String getUnixTimeStamp() {
         String unixtimestamp = "";
@@ -23,7 +24,6 @@ public class TimeUtil {
         return unixtimestamp;
     }
 
-
     /**
      * get current date and time as String
      *
@@ -32,5 +32,19 @@ public class TimeUtil {
     public static String getDateTimeString() {
         GregorianCalendar now = new GregorianCalendar();
         return mDateTimeFormat.format(now.getTime());
+    }
+
+    /**
+     * get current date as String
+     *
+     * @return
+     */
+    public static String getDateString() {
+        GregorianCalendar now = new GregorianCalendar();
+        return mDateFormat.format(now.getTime());
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getDateString());
     }
 }

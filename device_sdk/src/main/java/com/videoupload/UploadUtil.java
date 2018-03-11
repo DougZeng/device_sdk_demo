@@ -3,7 +3,6 @@ package com.videoupload;
 
 import android.util.Log;
 
-import com.litesuits.android.async.TaskExecutor;
 import com.wesine.device_sdk.utils.Device;
 import com.wesine.device_sdk.utils.ZeroMQUtil;
 
@@ -23,8 +22,6 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
     private static UploadUtil mUploadUtil;
     private OnPublishResultListener onPublishResultListener;
 
-    private ZeroMQUtil zeroMQUtil;
-
 
     private UploadUtil() {
 
@@ -43,10 +40,7 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
 
     public void init(String videoPath) {
         this.mVideoPath = videoPath;
-        System.out.println(System.currentTimeMillis());
         paramSignature = SignatureUtil.getSignatureUtil().getSignature();
-        System.out.println(System.currentTimeMillis());
-        zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
     }
 
     public void pauseUpload() {

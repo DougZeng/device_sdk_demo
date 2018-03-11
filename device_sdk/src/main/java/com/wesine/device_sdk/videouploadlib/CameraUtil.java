@@ -151,6 +151,7 @@ public class CameraUtil {
             mMuxer = null;
             // you should not wait here
         }
+        //TODO after stop recording start upload video to tencent cloud
         if (!StringUtils.isEmpty(outputPath)) {
             if (uploadUtilInstance != null) {
                 uploadUtilInstance.init(outputPath);

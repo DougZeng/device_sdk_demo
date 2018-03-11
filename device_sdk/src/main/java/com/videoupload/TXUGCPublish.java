@@ -14,13 +14,10 @@ import com.videoupload.impl.TVCConstants;
 import com.videoupload.impl.TVCUploadInfo;
 import com.videoupload.impl.TVCUploadListener;
 import com.wesine.device_sdk.utils.Device;
-import com.wesine.device_sdk.utils.TimeUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import static android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC;
 
 
 /**
@@ -202,8 +199,9 @@ public class TXUGCPublish {
                 return null;
             }
             MediaMetadataRetriever media = new MediaMetadataRetriever();
-            media.setDataSource(Device.getApp().getApplicationContext(), Uri.parse(videoPath));
-            Bitmap thumb = media.getFrameAtTime(COVER_TIME, OPTION_CLOSEST_SYNC);//getFrameAtTime: videoFrame is a NULL pointer
+            File videoDir = new File(videoPath);
+            media.setDataSource(videoDir.getAbsolutePath());
+            Bitmap thumb = media.getFrameAtTime();//getFrameAtTime: videoFrame is a NULL pointer COVER_TIME, MediaMetadataRetriever.OPTION_CLOSEST_SYNC
             String fileName = "";
             int index = videoPath.lastIndexOf(".");
             if (index != -1) {
@@ -211,10 +209,11 @@ public class TXUGCPublish {
             }
             strCoverFilePath = fileName + ".jpg";
             File f = new File(strCoverFilePath);
-            if (f.exists()) f.delete();
-
+            if (f.exists()) {
+                f.delete();
+            }
             fOut = new FileOutputStream(f);
-            thumb.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+            thumb.compress(Bitmap.CompressFormat.JPEG, 70, fOut);
             fOut.flush();
             fOut.close();
         } catch (Exception e) {

@@ -4,11 +4,11 @@ package com.wesine.device_sdk.utils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
-import com.litesuits.android.async.TaskExecutor;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.wesine.device_sdk.fps.FPSConfig;
 import com.wesine.device_sdk.fps.model.Content;
 import com.wesine.device_sdk.fps.model.Root;
+import com.wesine.device_sdk.utils.async.TaskExecutor;
 
 import org.zeromq.ZMQ;
 
@@ -78,6 +78,17 @@ public class ZeroMQUtil {
         root.setType(FPSConfig.CAPHEARTBEAT_TYPE);
         root.setFrom(mEgID);
         root.setTs(TimeUtil.getUnixTimeStamp());
+        heartPack = JSON.toJSONString(root);
+        if (DEBUG) {
+            Log.i(TAG, "getHeartPack: " + heartPack);
+        }
+    }
+
+    public void getHeartPack(String unixTimeStamp) {
+        Root root = new Root();
+        root.setType(FPSConfig.CAPHEARTBEAT_TYPE);
+        root.setFrom(mEgID);
+        root.setTs(unixTimeStamp);
         heartPack = JSON.toJSONString(root);
         if (DEBUG) {
             Log.i(TAG, "getHeartPack: " + heartPack);
@@ -172,12 +183,12 @@ public class ZeroMQUtil {
 
     public void sendUploadResult(String capvideourl, String cappictureurl) {
         getURLPack(capvideourl, cappictureurl);
-        TaskExecutor.startTimerTask(new Runnable() {
+        TaskExecutor.start(new Runnable() {
             @Override
             public void run() {
                 sendPack();
             }
-        }, 3000, 3 * 1000);
+        });
 
     }
 
@@ -186,7 +197,7 @@ public class ZeroMQUtil {
     /**
      * @return
      */
-    public void sendPack() {
+    public boolean sendPack() {
         if (context1.isTerminated()) {
             context1 = ZMQ.context(1);
         }
@@ -194,28 +205,28 @@ public class ZeroMQUtil {
         try {
             boolean b = subscriber1.setIdentity(mEgID.getBytes());//FROM duodian
             if (!b) {
-                return;
+                return false;
             }
             if (DEBUG) {
                 Log.i(TAG, "sendPack: setIdentity " + b);
             }
             boolean connect = subscriber1.connect(mAddr);// 注意，这里必须是服务器的IP地址或DNS Name
             if (!connect) {
-                return;
+                return false;
             }
             if (DEBUG) {
                 Log.i(TAG, "sendPack: connect " + connect);
             }
             boolean sendMore = subscriber1.sendMore(FPSConfig.LPS_SERVER);//LPS SERVER
             if (!sendMore) {
-                return;
+                return false;
             }
             if (DEBUG) {
                 Log.i(TAG, "sendPack: sendMore " + sendMore);
             }
             boolean send = subscriber1.send(urlPack);//MSG
             if (!send) {
-                return;
+                return false;
             }
             if (DEBUG) {
                 Log.i(TAG, "sendPack: send " + send);
@@ -234,6 +245,7 @@ public class ZeroMQUtil {
             context1.term();
             e.printStackTrace();
         }
+        return true;
     }
 
     /*{

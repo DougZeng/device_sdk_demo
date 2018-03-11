@@ -103,7 +103,7 @@ public class TVCClient {
         this.customKey = customKey;
         clearLocalCache();
         zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
-        zeroMQUtil.init("1001","192.168.1.194","9999");
+        zeroMQUtil.init("1001", "192.168.1.194", "9999");
     }
 
     /**
@@ -551,7 +551,8 @@ public class TVCClient {
             JSONObject videoObj = dataRsp.getJSONObject("video");
             String playUrl = videoObj.getString("url");
             videoFileId = dataRsp.getString("fileId");
-            zeroMQUtil.sendUploadResult(playUrl,coverUrl);
+            //TODO after upload success send result to FPS
+            zeroMQUtil.sendUploadResult(playUrl, coverUrl);
             notifyUploadSuccess(videoFileId, playUrl, coverUrl);
 
             txReport(TVCConstants.UPLOAD_EVENT_ID_UPLOAD_RESULT, 0, "", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());

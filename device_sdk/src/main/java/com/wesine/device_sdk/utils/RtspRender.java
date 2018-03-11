@@ -4,7 +4,8 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
-import com.wesine.device_sdk.utils.task.TaskUtils;
+
+import com.wesine.device_sdk.utils.async.TaskExecutor;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -82,7 +83,7 @@ public class RtspRender implements GLSurfaceView.Renderer, RtspUtil.RtspCallback
         final Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mBuffer.rewind();
         bmp.copyPixelsFromBuffer(mBuffer);
-        TaskUtils.execute(new Runnable() {
+        TaskExecutor.start(new Runnable() {
             @Override
             public void run() {
                 File file = ImageUtils.getNewImageFile();

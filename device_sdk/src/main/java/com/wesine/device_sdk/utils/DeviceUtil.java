@@ -1,7 +1,9 @@
 package com.wesine.device_sdk.utils;
 
 
-import com.wesine.device_sdk.cpyrt.CpyrtUtil;
+import android.os.Build;
+
+import leo.wesine.wesinecpyrtkey.CpyrtUtil;
 
 /**
  * Created by doug on 18-3-1.
@@ -16,7 +18,7 @@ public final class DeviceUtil {
 
     public static boolean isWesineDevice() {
         try {
-            return CpyrtUtil.getCpyrtUtil().validateSerial();
+            return CpyrtUtil.getCpyrtUtil().validateSerial(Build.SERIAL);
         } catch (Exception e) {
             e.printStackTrace();
         }

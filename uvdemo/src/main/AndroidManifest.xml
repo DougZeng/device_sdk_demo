@@ -34,9 +34,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Test" >
+        <activity android:name=".Test">
 
         </activity>
+
+        <service android:name="com.wesine.device_sdk.service.HeartBeatService" />
+        <receiver android:name="com.wesine.device_sdk.service.AlarmReceiver" />
+        <service android:name="com.wesine.device_sdk.service.BackgroundTaskIntentService" />
 
     </application>
 
