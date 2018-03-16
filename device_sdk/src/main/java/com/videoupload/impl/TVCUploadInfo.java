@@ -2,6 +2,7 @@ package com.videoupload.impl;
 
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 
 import java.io.File;
@@ -27,12 +28,13 @@ public class TVCUploadInfo {
 
     /**
      * 创建上传参数
+     *
      * @param fileType  文件类型
      * @param filePath  文件本地路径
      * @param coverType 封面图片类型
      * @param coverPath 封面图片本地路径
      */
-    public TVCUploadInfo(String fileType, String filePath, String coverType, String coverPath){
+    public TVCUploadInfo(String fileType, String filePath, String coverType, String coverPath) {
         this.fileType = fileType;
         this.filePath = filePath;
         this.coverType = coverType;
@@ -55,11 +57,11 @@ public class TVCUploadInfo {
         return coverPath;
     }
 
-    public boolean isNeedCover(){
+    public boolean isNeedCover() {
         return !StringUtils.isEmpty(coverType) && !StringUtils.isEmpty(coverPath);
     }
 
-    public String getFileName(){
+    public String getFileName() {
         if (null == fileName) {
             int pos = filePath.lastIndexOf('/');
             if (-1 == pos) {
@@ -72,8 +74,8 @@ public class TVCUploadInfo {
 
         return fileName;
     }
-    
-    public String getCoverName(){
+
+    public String getCoverName() {
         if (null == coverName) {
             int pos = coverPath.lastIndexOf('/');
             if (-1 == pos) {
@@ -87,39 +89,39 @@ public class TVCUploadInfo {
     }
 
     public long getFileSize() {
-        if (0 == videoFileSize){
-            Log.i("getFileSize", "getFileSize: "+filePath);
+        if (0 == videoFileSize) {
+            Logger.d("getFilePath %s: ", filePath);
             File file = new File(filePath);
             try {
                 if (file.exists()) {
                     FileInputStream fis = new FileInputStream(file);
                     videoFileSize = fis.available();
                 }
-            }catch (Exception e){
-                Log.e("getFileSize", "getFileSize: "+e);
+            } catch (Exception e) {
+                Logger.e(e.getMessage());
             }
         }
         return videoFileSize;
     }
 
     public long getCoverFileSize() {
-        if (0 == coverFileSize){
-            Log.i("getCoverFileSize", "getCoverFileSize: "+coverPath);
+        if (0 == coverFileSize) {
+            Logger.d("coverPath %s" ,coverPath);
             File file = new File(coverPath);
             try {
                 if (file.exists()) {
                     FileInputStream fis = new FileInputStream(file);
                     coverFileSize = fis.available();
                 }
-            }catch (Exception e){
-                Log.e("getCoverFileSize", "getCoverFileSize: "+e);
+            } catch (Exception e) {
+                Logger.e(e.getMessage());
             }
         }
         return coverFileSize;
     }
 
     public long getCoverLastModifyTime() {
-        if (0 ==  coverLastModTime){
+        if (0 == coverLastModTime) {
             File f = new File(coverPath);
             coverLastModTime = f.lastModified();
         }
@@ -127,14 +129,14 @@ public class TVCUploadInfo {
     }
 
     public long getFileLastModifyTime() {
-        if (0 ==  fileLastModTime){
+        if (0 == fileLastModTime) {
             File f = new File(filePath);
             fileLastModTime = f.lastModified();
         }
         return fileLastModTime;
     }
 
-    public boolean isContainSpecialCharacters(String string){
+    public boolean isContainSpecialCharacters(String string) {
         String regEx = "[/ : * ? \" < >]";
         Pattern pattern = Pattern.compile(regEx);
         Matcher matcher = pattern.matcher(string);

@@ -3,6 +3,7 @@ package com.videoupload;
 
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.wesine.device_sdk.utils.Device;
 import com.wesine.device_sdk.utils.ZeroMQUtil;
 
@@ -57,7 +58,7 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
             param.videoPath = mVideoPath;
             int publishCode = mVideoPublish.publishVideo(param);
             if (publishCode != 0) {
-                Log.e(TAG, "resumeUpload: " + "发布失败，错误码：" + publishCode);
+                Logger.e("resumeUpload: 发布失败，错误码： %d", publishCode);
             }
         }
     }
@@ -74,7 +75,7 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
         param.videoPath = mVideoPath;
         int publishCode = mVideoPublish.publishVideo(param);
         if (publishCode != 0) {
-            Log.e(TAG, "resumeUpload: " + "发布失败，错误码：" + publishCode);
+            Logger.e("resumeUpload: 发布失败，错误码： %d", publishCode);
         }
 
     }
@@ -84,15 +85,18 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
     }
 
     public interface OnPublishResultListener {
-        void onSuccess(TXUGCPublishTypeDef.TXPublishResult result);
+//        void onSuccess(TXUGCPublishTypeDef.TXPublishResult result);
+//
+//        void onFailed();
 
-        void onFailed();
+        void onProgress(long uploadBytes, long totalBytes);
     }
 
 
     @Override
     public void onPublishProgress(long uploadBytes, long totalBytes) {
 //        Log.i(TAG, "onPublishProgress: " + (int) (100 * uploadBytes / totalBytes));
+        onPublishResultListener.onProgress(uploadBytes, totalBytes);
     }
 
     @Override

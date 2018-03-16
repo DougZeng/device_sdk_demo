@@ -23,6 +23,7 @@ import android.media.MediaMuxer;
 import android.os.Environment;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.wesine.device_sdk.utils.TimeUtil;
 
@@ -31,7 +32,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class MediaMuxerWrapper {
-    private static final boolean DEBUG = false;    // TODO set false on release
     private static final String TAG = MediaMuxerWrapper.class.getSimpleName();
 
     private static final String DIR_NAME = "WesineRec";
@@ -119,15 +119,15 @@ public class MediaMuxerWrapper {
      *
      * @return true when muxer is ready to write
      */
-	/*package*/
+    /*package*/
     synchronized boolean start() {
-        if (DEBUG) Log.v(TAG, "start:");
+        Logger.d("start:");
         mStatredCount++;
         if ((mEncoderCount > 0) && (mStatredCount == mEncoderCount)) {
             mMediaMuxer.start();
             mIsStarted = true;
             notifyAll();
-            if (DEBUG) Log.v(TAG, "MediaMuxer started:");
+            Logger.d("MediaMuxer started:");
         }
         return mIsStarted;
     }
@@ -135,15 +135,15 @@ public class MediaMuxerWrapper {
     /**
      * request stop recording from encoder when encoder received EOS
      */
-	/*package*/
+    /*package*/
     synchronized void stop() {
-        if (DEBUG) Log.v(TAG, "stop:mStatredCount=" + mStatredCount);
+        Logger.d("stop:mStatredCount= d%" + mStatredCount);
         mStatredCount--;
         if ((mEncoderCount > 0) && (mStatredCount <= 0)) {
             mMediaMuxer.stop();
             mMediaMuxer.release();
             mIsStarted = false;
-            if (DEBUG) Log.v(TAG, "MediaMuxer stopped:");
+            Logger.d("MediaMuxer stopped:");
         }
     }
 
@@ -153,13 +153,13 @@ public class MediaMuxerWrapper {
      * @param format
      * @return minus value indicate error
      */
-	/*package*/
+    /*package*/
     synchronized int addTrack(final MediaFormat format) {
         if (mIsStarted)
             throw new IllegalStateException("muxer already started");
         final int trackIx = mMediaMuxer.addTrack(format);
-        if (DEBUG)
-            Log.i(TAG, "addTrack:trackNum=" + mEncoderCount + ",trackIx=" + trackIx + ",format=" + format);
+        Logger.d("addTrack:trackNum d% ", mEncoderCount + ",trackIx=" + trackIx + ",format=" + format);
+        Logger.d("trackIx d% ", trackIx);
         return trackIx;
     }
 
@@ -189,7 +189,7 @@ public class MediaMuxerWrapper {
     public static final File getCaptureFile(final String type, final String ext) {
         String fileName = TimeUtil.getDateString();
         File dir = new File(Environment.getExternalStoragePublicDirectory(type), fileName);
-        Log.d(TAG, "path=" + dir.toString());
+        Logger.d("path %s", dir.toString());
         if (!dir.exists()) {
             dir.mkdirs();
         }

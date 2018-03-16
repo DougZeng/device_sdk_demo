@@ -22,6 +22,8 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -30,7 +32,6 @@ import java.nio.FloatBuffer;
  * Helper class to draw to whole view using specific texture and texture matrix
  */
 public class GLDrawer2D {
-	private static final boolean DEBUG = false; // TODO set false on release
 	private static final String TAG = "GLDrawer2D";
 
 	private static final String vss
@@ -140,7 +141,7 @@ public class GLDrawer2D {
 	 * @return texture ID
 	 */
 	public static int initTex() {
-		if (DEBUG) Log.v(TAG, "initTex:");
+		Logger.d("initTex:");
 		final int[] tex = new int[1];
 		GLES20.glGenTextures(1, tex, 0);
 		GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, tex[0]);
@@ -159,7 +160,7 @@ public class GLDrawer2D {
 	 * delete specific texture
 	 */
 	public static void deleteTex(final int hTex) {
-		if (DEBUG) Log.v(TAG, "deleteTex:");
+		Logger.d("deleteTex:");
 		final int[] tex = new int[] {hTex};
 		GLES20.glDeleteTextures(1, tex, 0);
 	}
@@ -171,14 +172,14 @@ public class GLDrawer2D {
 	 * @return
 	 */
 	public static int loadShader(final String vss, final String fss) {
-		if (DEBUG) Log.v(TAG, "loadShader:");
+		Logger.d("loadShader:");
 		int vs = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
 		GLES20.glShaderSource(vs, vss);
 		GLES20.glCompileShader(vs);
 		final int[] compiled = new int[1];
 		GLES20.glGetShaderiv(vs, GLES20.GL_COMPILE_STATUS, compiled, 0);
 		if (compiled[0] == 0) {
-			if (DEBUG) Log.e(TAG, "Failed to compile vertex shader:"
+			Logger.d("Failed to compile vertex shader:"
 					+ GLES20.glGetShaderInfoLog(vs));
 			GLES20.glDeleteShader(vs);
 			vs = 0;
@@ -189,7 +190,7 @@ public class GLDrawer2D {
 		GLES20.glCompileShader(fs);
 		GLES20.glGetShaderiv(fs, GLES20.GL_COMPILE_STATUS, compiled, 0);
 		if (compiled[0] == 0) {
-			if (DEBUG) Log.w(TAG, "Failed to compile fragment shader:"
+			Logger.d("Failed to compile fragment shader:"
 				+ GLES20.glGetShaderInfoLog(fs));
 			GLES20.glDeleteShader(fs);
 			fs = 0;

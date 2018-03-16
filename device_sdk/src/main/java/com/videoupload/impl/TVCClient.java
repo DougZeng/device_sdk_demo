@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.cos.xml.common.Region;
@@ -173,7 +174,7 @@ public class TVCClient {
                 return true;
             }
         } catch (Exception e) {
-            Log.e("getFileSize", "getFileSize: " + e);
+            Logger.e(e, "getFileSize: ");
             return false;
         }
         return false;
@@ -204,7 +205,7 @@ public class TVCClient {
         }
 
         String fileName = info.getFileName();
-        Log.d(TAG, "fileName = " + fileName);
+        Logger.d("fileName %s", fileName);
         if (fileName != null && fileName.getBytes().length > 40) { //视频文件名太长 直接返回
             tvcListener.onFailed(TVCConstants.ERR_UGC_FILE_NAME, "file name too long");
             txReport(TVCConstants.UPLOAD_EVENT_ID_REQUEST_UPLOAD, TVCConstants.ERR_UGC_FILE_NAME, "file name too long", System.currentTimeMillis(), 0, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
@@ -246,7 +247,7 @@ public class TVCClient {
         ugcClient.initUploadUGC(info, customKey, vodSessionKey, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "initUploadUGC->onFailure: " + e.toString());
+                Logger.e(e.getMessage());
                 notifyUploadFailed(TVCConstants.ERR_UGC_REQUEST_FAILED, e.toString());
 
                 txReport(TVCConstants.UPLOAD_EVENT_ID_REQUEST_UPLOAD, TVCConstants.ERR_UGC_REQUEST_FAILED, e.toString(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
@@ -260,8 +261,7 @@ public class TVCClient {
                     txReport(TVCConstants.UPLOAD_EVENT_ID_REQUEST_UPLOAD, TVCConstants.ERR_UGC_REQUEST_FAILED, "HTTP Code:" + response.code(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
 
                     setResumeData(uploadInfo.getFilePath(), "", "");
-
-                    Log.e(TAG, "initUploadUGC->http code: " + response.code());
+                    Logger.e("initUploadUGC->http code: %d", response.code());
                     throw new IOException("" + response);
                 } else {
                     parseInitRsp(response.body().string());
@@ -272,9 +272,9 @@ public class TVCClient {
 
     // 解析上传请求返回信息
     private void parseInitRsp(String rspString) {
-        Log.i(TAG, "parseInitRsp: " + rspString);
+        Logger.d("parseInitRsp: %s", rspString);
         if (StringUtils.isEmpty(rspString)) {
-            Log.e(TAG, "parseInitRsp->response is empty!");
+            Logger.e("parseInitRsp->response is empty!");
             notifyUploadFailed(TVCConstants.ERR_UGC_PARSE_FAILED, "init response is empty");
 
             txReport(TVCConstants.UPLOAD_EVENT_ID_REQUEST_UPLOAD, TVCConstants.ERR_UGC_REQUEST_FAILED, "init response is empty", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
@@ -287,7 +287,7 @@ public class TVCClient {
         try {
             JSONObject jsonRsp = new JSONObject(rspString);
             int code = jsonRsp.optInt("code", -1);
-            Log.i(TAG, "parseInitRsp: " + code);
+            Logger.d("parseInitRsp: %d", code);
 
             String message = "";
             try {
@@ -338,6 +338,9 @@ public class TVCClient {
             Log.d(TAG, "uploadRegion=" + uploadRegion);
             Log.d(TAG, "domain=" + domain);
             Log.d(TAG, "vodSessionKey=" + vodSessionKey);
+
+            //TODO
+            zeroMQUtil.sendUploadResult(cosVideoPath, cosCoverPath);
 
             CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                     .setAppidAndRegion(String.valueOf(cosAppId), uploadRegion)
@@ -418,8 +421,7 @@ public class TVCClient {
             public void run() {
                 reqTime = System.currentTimeMillis();
 
-                Log.i(TAG, "uploadCosVideo begin :  cosBucket " + cosBucket + " cosVideoPath: " + cosVideoPath + "  path " + uploadInfo.getFilePath());
-
+                Logger.d("uploadCosVideo begin :  cosBucket  %s   cosVideoPath: %s  path  %s", cosBucket, cosVideoPath, uploadInfo.getFilePath());
                 multipartUploadHelper = new MultipartUploadService(cosService);
                 multipartUploadHelper.setBucket(cosBucket);
                 multipartUploadHelper.setCosPath(cosVideoPath);
@@ -453,20 +455,18 @@ public class TVCClient {
                     //分片上传完成之后清空本地缓存的断点续传信息
                     setResumeData(uploadInfo.getFilePath(), "", "");
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, 0, "", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
-
-                    Log.w(TAG, result.accessUrl);
-                    Log.i(TAG, "uploadCosVideo finish:  cosBucket " + cosBucket + " cosVideoPath: " + cosVideoPath + "  path: " + uploadInfo.getFilePath() + "  size: " + uploadInfo.getFileSize());
-
+                    Logger.d(result.accessUrl);
+                    Logger.d("uploadCosVideo finish:  cosBucket  %s cosVideoPath: %s  path: %s  size: %d", cosBucket, cosVideoPath, uploadInfo.getFilePath(), uploadInfo.getFileSize());
                     startUploadCoverFile(result);
                 } catch (CosXmlClientException e) {
-                    Log.w(TAG, "CosXmlClientException =" + e.getMessage());
+                    Logger.e(e.getMessage());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "HTTP Code:" + e.getMessage(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
                     if (!TVCUtils.isNetworkAvailable(context) && busyFlag) {
                         notifyUploadFailed(TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "cos upload video error:" + e.getMessage());
                         setResumeData(uploadInfo.getFilePath(), "", "");
                     }
                 } catch (CosXmlServiceException e) {
-                    Log.w(TAG, "QCloudServiceException =" + e.toString());
+                    Logger.e(e.getMessage());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "HTTP Code:" + e.getMessage(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
                     // 临时密钥过期，重新申请一次临时密钥，不中断上传
                     if (e.getErrorCode().equalsIgnoreCase("RequestTimeTooSkewed")) {
@@ -476,7 +476,7 @@ public class TVCClient {
                         setResumeData(uploadInfo.getFilePath(), "", "");
                     }
                 } catch (Exception e) {
-                    Log.w(TAG, "Exception =" + e.toString());
+                    Logger.e(e.getMessage());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_COS_UPLOAD, TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "HTTP Code:" + e.getMessage(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
                     notifyUploadFailed(TVCConstants.ERR_UPLOAD_VIDEO_FAILED, "cos upload video error:" + e.getMessage());
                     setResumeData(uploadInfo.getFilePath(), "", "");
@@ -488,7 +488,7 @@ public class TVCClient {
     // 解析cos上传视频返回信息
     private void startFinishUploadUGC(CosXmlResult result) {
         String strAccessUrl = result.accessUrl;
-        Log.i(TAG, "startFinishUploadUGC: " + strAccessUrl);
+        Logger.d("startFinishUploadUGC: %s", strAccessUrl);
 
         reqTime = System.currentTimeMillis();
 
@@ -496,7 +496,7 @@ public class TVCClient {
         ugcClient.finishUploadUGC(domain, customKey, vodSessionKey, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i(TAG, "FinishUploadUGC: fail" + e.toString());
+                Logger.e(e.getMessage());
                 notifyUploadFailed(TVCConstants.ERR_UGC_FINISH_REQUEST_FAILED, e.toString());
 
                 txReport(TVCConstants.UPLOAD_EVENT_ID_UPLOAD_RESULT, TVCConstants.ERR_UGC_FINISH_REQUEST_FAILED, e.toString(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
@@ -506,13 +506,12 @@ public class TVCClient {
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     notifyUploadFailed(TVCConstants.ERR_UGC_FINISH_REQUEST_FAILED, "HTTP Code:" + response.code());
-                    Log.e(TAG, "FinishUploadUGC->http code: " + response.code());
-
+                    Logger.e("FinishUploadUGC->http code: %d", response.code());
                     txReport(TVCConstants.UPLOAD_EVENT_ID_UPLOAD_RESULT, TVCConstants.ERR_UGC_FINISH_REQUEST_FAILED, "HTTP Code:" + response.code(), reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
 
                     throw new IOException("" + response);
                 } else {
-                    Log.i(TAG, "FinishUploadUGC Suc onResponse body : " + response.body().toString());
+                    Logger.d("FinishUploadUGC Suc onResponse body : %s" + response.body().toString());
                     parseFinishRsp(response.body().string());
                 }
             }
@@ -522,9 +521,9 @@ public class TVCClient {
 
     // 解析结束上传返回信息.
     private void parseFinishRsp(String rspString) {
-        Log.i(TAG, "parseFinishRsp: " + rspString);
+        Logger.d("parseFinishRsp:  %s ", rspString);
         if (StringUtils.isEmpty(rspString)) {
-            Log.e(TAG, "parseFinishRsp->response is empty!");
+            Logger.e("parseFinishRsp->response is empty!");
             notifyUploadFailed(TVCConstants.ERR_UGC_FINISH_RESPONSE_FAILED, "finish response is empty");
 
             txReport(TVCConstants.UPLOAD_EVENT_ID_UPLOAD_RESULT, TVCConstants.ERR_UGC_FINISH_RESPONSE_FAILED, "finish response is empty", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
@@ -552,14 +551,14 @@ public class TVCClient {
             String playUrl = videoObj.getString("url");
             videoFileId = dataRsp.getString("fileId");
             //TODO after upload success send result to FPS
-            zeroMQUtil.sendUploadResult(playUrl, coverUrl);
+//            zeroMQUtil.sendUploadResult(playUrl, coverUrl);
             notifyUploadSuccess(videoFileId, playUrl, coverUrl);
 
             txReport(TVCConstants.UPLOAD_EVENT_ID_UPLOAD_RESULT, 0, "", reqTime, System.currentTimeMillis() - reqTime, uploadInfo.getFileSize(), uploadInfo.getFileType(), uploadInfo.getFileName());
 
-            Log.d(TAG, "playUrl:" + playUrl);
-            Log.d(TAG, "coverUrl: " + coverUrl);
-            Log.d(TAG, "videoFileId: " + videoFileId);
+            Logger.d("playUrl:  %s" , playUrl);
+            Logger.d("coverUrl:  %s" , coverUrl);
+            Logger.d("videoFileId:  %s" , videoFileId);
         } catch (JSONException e) {
             notifyUploadFailed(TVCConstants.ERR_UGC_FINISH_RESPONSE_FAILED, e.toString());
 
@@ -605,12 +604,12 @@ public class TVCClient {
             ugcClient.reportEvent(body, new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
-                            Log.e(TAG, "data report failed, msg:" + e.toString());
+                            Logger.e(e.getMessage(),"data report failed, msg:");
                         }
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            Log.i(TAG, "data report response, msg:" + response.toString());
+                            Logger.d("data report response, msg:  %s" + response.toString());
                         }
                     }
             );

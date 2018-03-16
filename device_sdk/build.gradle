@@ -62,6 +62,7 @@ dependencies {
     compile files('libs/cpyrt.jar')
     compile(name: 'libvlc-3.0.0-null', ext: 'aar')
     implementation 'com.android.support:appcompat-v7:27.1.0'
+    compile 'com.orhanobut:logger:2.1.1'
 }
 
 task copyAAR(type: Copy) {

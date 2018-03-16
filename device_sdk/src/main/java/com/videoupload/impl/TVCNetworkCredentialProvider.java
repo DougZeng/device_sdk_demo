@@ -6,6 +6,7 @@ package com.videoupload.impl;
 
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.tencent.qcloud.core.network.auth.BasicLifecycleCredentialProvider;
 import com.tencent.qcloud.core.network.auth.BasicQCloudCredentials;
@@ -83,9 +84,9 @@ public class TVCNetworkCredentialProvider extends BasicLifecycleCredentialProvid
                     if (retData.has("keyTime")) {
                         keyTime = retData.getString("keyTime");
                     }
-                    Log.d(TAG, "upload got cos sig succeed");
+                    Logger.d("upload got cos sig succeed");
                 } else {
-                    Log.d(TAG, "upload got cos sig failed");
+                    Logger.d("upload got cos sig failed");
                 }
             }
             urlConnection.disconnect();

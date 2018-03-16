@@ -2,6 +2,7 @@ package com.wesine.device_sdk.videouploadlib;
 
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.videoupload.UploadUtil;
 import com.wesine.device_sdk.encoder.MediaAudioEncoder;
@@ -16,7 +17,6 @@ import java.io.IOException;
  */
 
 public class CameraUtil {
-    private static final boolean DEBUG = false;    // TODO set false on release
     private static final String TAG = CameraUtil.class.getSimpleName();
     private static CameraUtil mCameraUtil;
     private UploadUtil uploadUtilInstance;
@@ -76,12 +76,12 @@ public class CameraUtil {
 
 
     public void onResume() {
-        if (DEBUG) Log.v(TAG, "onResume:");
+        Logger.d("onResume:");
         mCameraView.onResume();
     }
 
     public void onPause() {
-        if (DEBUG) Log.v(TAG, "onPause:");
+        Logger.d("onPause:");
         stopRecording();
         mCameraView.onPause();
     }
@@ -119,7 +119,7 @@ public class CameraUtil {
      * of encoder is heavy work
      */
     private void startRecording() {
-        if (DEBUG) Log.v(TAG, "startRecording:");
+        Logger.d("startRecording:");
         try {
             mMuxer = new MediaMuxerWrapper(".mp4");    // if you record audio only, ".m4a" is also OK.
             if (true) {
@@ -133,7 +133,7 @@ public class CameraUtil {
             mMuxer.prepare();
             mMuxer.startRecording();
         } catch (final IOException e) {
-            Log.e(TAG, "startCapture:", e);
+            Logger.e(e, "startCapture");
         }
     }
 
@@ -141,30 +141,30 @@ public class CameraUtil {
      * request stop recording
      */
     public void stopRecording() {
-        if (DEBUG) Log.v(TAG, "stopRecording:mMuxer=" + mMuxer);
+        Logger.d("stopRecording:mMuxer ");
         String outputPath = "";
         if (mMuxer != null) {
             mMuxer.stopRecording();
             outputPath = mMuxer.getOutputPath();
-            Log.d(TAG, "stopRecording: outputPath = " + outputPath);
+            Logger.d("stopRecording: outputPath %s", outputPath);
 //            onRecordListener.onRecordSuccess(outputPath);
             mMuxer = null;
             // you should not wait here
         }
         //TODO after stop recording start upload video to tencent cloud
-        if (!StringUtils.isEmpty(outputPath)) {
-            if (uploadUtilInstance != null) {
-                uploadUtilInstance.init(outputPath);
-                uploadUtilInstance.beginUpload();
-            }
-        }
+//        if (!StringUtils.isEmpty(outputPath)) {
+//            if (uploadUtilInstance != null) {
+//                uploadUtilInstance.init(outputPath);
+//                uploadUtilInstance.beginUpload();
+//            }
+//        }
     }
 
     public void addOnRecordListener(OnRecordListener onRecordListener) {
         this.onRecordListener = onRecordListener;
     }
 
-    interface OnRecordListener {
+    public interface OnRecordListener {
         void onRecordSuccess(String path);
     }
 
@@ -174,14 +174,14 @@ public class CameraUtil {
     private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
         @Override
         public void onPrepared(final MediaEncoder encoder) {
-            if (DEBUG) Log.v(TAG, "onPrepared:encoder=" + encoder);
+            Logger.d("onPrepared:encoder ");
             if (encoder instanceof MediaVideoEncoder)
                 mCameraView.setVideoEncoder((MediaVideoEncoder) encoder);
         }
 
         @Override
         public void onStopped(final MediaEncoder encoder) {
-            if (DEBUG) Log.v(TAG, "onStopped:encoder=" + encoder);
+            Logger.d("onStopped:encoder ");
             if (encoder instanceof MediaVideoEncoder)
                 mCameraView.setVideoEncoder(null);
         }

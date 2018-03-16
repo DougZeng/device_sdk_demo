@@ -3,6 +3,8 @@ package com.wesine.device_sdk.utils;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
+
 
 /**
  * Created by doug on 18-2-27.
@@ -40,7 +42,7 @@ public class ShaderHelper {
         final int shaderObjectId = GLES20.glCreateShader(type);
 
         if (shaderObjectId == 0) {
-            Log.w(TAG, "Could not create new shader.");
+            Logger.d("Could not create new shader.");
             return 0;
         }
 
@@ -64,7 +66,7 @@ public class ShaderHelper {
             // If it failed, delete the shader object.
             GLES20.glDeleteShader(shaderObjectId);
 
-            Log.w(TAG, "Compilation of shader failed.");
+            Logger.d("Compilation of shader failed.");
 
             return 0;
         }
@@ -85,7 +87,7 @@ public class ShaderHelper {
         final int programObjectId = GLES20.glCreateProgram();
 
         if (programObjectId == 0) {
-            Log.w(TAG, "Could not create new program");
+            Logger.d("Could not create new program");
 
             return 0;
         }
@@ -115,7 +117,7 @@ public class ShaderHelper {
             // If it failed, delete the program object.
             GLES20.glDeleteProgram(programObjectId);
 
-            Log.w(TAG, "Linking of program failed.");
+            Logger.d("Linking of program failed.");
 
             return 0;
         }

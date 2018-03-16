@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 
 import org.json.JSONException;
@@ -63,7 +64,7 @@ public class UGCClient {
      */
     public int initUploadUGC(TVCUploadInfo info, String customKey, String vodSessionKey, Callback callback) {
         String reqUrl = SERVER + "ApplyUploadUGC";
-        Log.d(TAG, "initUploadUGC->request url:" + reqUrl);
+        Logger.d("initUploadUGC->request url: %s" , reqUrl);
 
         String body = "";
         try {
@@ -82,7 +83,7 @@ public class UGCClient {
                 jsonObject.put("vodSessionKey", vodSessionKey);
             }
             body = jsonObject.toString();
-            Log.d(TAG, body);
+            Logger.json(body);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -120,7 +121,7 @@ public class UGCClient {
      */
     public int finishUploadUGC(String domain, String customKey, String vodSessionKey, final Callback callback) {
         String reqUrl = "https://" + domain + "/v3/index.php?Action=CommitUploadUGC";
-        Log.d(TAG, "finishUploadUGC->request url:" + reqUrl);
+        Logger.d("finishUploadUGC->request url: %s" , reqUrl);
         String body = "";
         try {
             JSONObject jsonObject = new JSONObject();
@@ -129,7 +130,7 @@ public class UGCClient {
             jsonObject.put("clientVersion", TVCConstants.TVCVERSION);
             jsonObject.put("vodSessionKey", vodSessionKey);
             body = jsonObject.toString();
-            Log.d(TAG, body);
+            Logger.json(body);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -166,7 +167,7 @@ public class UGCClient {
      */
     public int reportEvent(String context, final Callback callback) {
         String reqUrl = "https://vodreport.qcloud.com/ugcupload";
-        Log.d(TAG, "reportUGCEvent->request url:" + reqUrl + " body:" + context);
+        Logger.d("reportUGCEvent->request url: %s" , reqUrl);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), context);
         Request request = new Request.Builder()
                 .url(reqUrl)

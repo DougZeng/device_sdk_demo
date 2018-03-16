@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.videoupload.impl.TVCClient;
 import com.videoupload.impl.TVCConstants;
@@ -52,23 +53,23 @@ public class TXUGCPublish {
 
     public int publishVideo(TXUGCPublishTypeDef.TXPublishParam param) {
         if (mPublishing) {
-            Log.e(TAG, "there is existing publish task");
+            Logger.d("there is existing publish task");
             return TVCConstants.ERR_UGC_PUBLISHING;
         }
 
         //TXCDRApi.txReportDAU(mContext, TXCDRDef.DR_DAU_EVENT_ID_UGC_PUBLISH);
 
         if (param == null) {
-            Log.e(TAG, "publishVideo invalid param");
+            Logger.d("publishVideo invalid param");
             return TVCConstants.ERR_UGC_INVALID_PARAM;
         }
         if (StringUtils.isEmpty(param.signature)) {
-            Log.e(TAG, "publishVideo invalid UGCSignature");
+            Logger.d("publishVideo invalid UGCSignature");
             return TVCConstants.ERR_UGC_INVALID_SIGNATURE;
         }
 
         if (StringUtils.isEmpty(param.videoPath)) {
-            Log.e(TAG, "publishVideo invalid videoPath");
+            Logger.d("publishVideo invalid videoPath");
             return TVCConstants.ERR_UGC_INVALID_VIDOPATH;
         }
 
@@ -195,7 +196,7 @@ public class TXUGCPublish {
         try {
             File videoFile = new File(videoPath);
             if (!videoFile.exists()) {
-                Log.w(TAG, "record: video file is not exists when record finish");
+                Logger.d("record: video file is not exists when record finish");
                 return null;
             }
             MediaMetadataRetriever media = new MediaMetadataRetriever();

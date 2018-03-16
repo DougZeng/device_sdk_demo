@@ -3,19 +3,23 @@ package com.wesine.uvdemo;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.videoupload.TXUGCPublishTypeDef;
+import com.videoupload.UploadUtil;
 import com.wesine.device_sdk.service.HeartBeatService;
 import com.wesine.device_sdk.utils.BarcodeScanner;
+import com.wesine.device_sdk.utils.async.Log;
 import com.wesine.device_sdk.videouploadlib.CameraUtil;
 import com.wesine.device_sdk.videouploadlib.CameraView;
 import com.wesine.device_sdk.vlclib.VlcClient;
 import com.wesine.device_sdk.vlclib.view.WesineGLSV;
 
 
-public class MainActivity extends AppCompatActivity implements BarcodeScanner.OnScanSuccessListener {
+public class MainActivity extends AppCompatActivity implements BarcodeScanner.OnScanSuccessListener, CameraUtil.OnRecordListener, UploadUtil.OnPublishResultListener {
 
     private static final String TAG = "MainActivity";
     private CameraView cameraView;
@@ -24,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
     private WesineGLSV player;
     private VlcClient vlcClient;
     private BarcodeScanner barcodeScanner;
+    private UploadUtil uploadUtil;
+    private boolean isRecord = false;
+    private String recordPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
         vlcClient.setWesineGLSV(player);
         vlcClient.onCreat();
 
+        uploadUtil = UploadUtil.getUploadUtilInstance();
+        uploadUtil.addResultListener(this);
+
     }
 
     private void startServiceMSG() {
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
     protected void onResume() {
         vlcClient.onResume();
         cameraUtil.onResume();
+        cameraUtil.addOnRecordListener(this);
         super.onResume();
     }
 
@@ -93,5 +104,36 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
     @Override
     public void onScanSuccess(String barcode) {
         Toast.makeText(this, barcode, Toast.LENGTH_LONG).show();
+    }
+
+    public void upload(View view) {
+        if (isRecord) {
+            uploadUtil.init(recordPath);
+            uploadUtil.beginUpload();
+        } else {
+            Toast.makeText(this, "record failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void pause(View view) {
+        uploadUtil.pauseUpload();
+    }
+
+    public void resume(View view) {
+        uploadUtil.resumeUpload();
+    }
+
+    @Override
+    public void onRecordSuccess(String path) {
+        if (!TextUtils.isEmpty(path)) {
+            isRecord = true;
+            recordPath = path;
+        }
+    }
+
+
+    @Override
+    public void onProgress(long uploadBytes, long totalBytes) {
+        Log.i(TAG, "onProgress: " + (int) (100 * uploadBytes / totalBytes));
     }
 }

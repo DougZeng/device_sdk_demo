@@ -4,6 +4,7 @@ package com.wesine.device_sdk.utils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
 import com.wesine.device_sdk.fps.FPSConfig;
 import com.wesine.device_sdk.fps.model.Content;
@@ -22,7 +23,6 @@ import java.util.Timer;
  */
 
 public class ZeroMQUtil {
-    private static final boolean DEBUG = true;    // TODO set false on release
     private static final String TAG = "ZeroMQUtil";
     public static ZeroMQUtil mZeroMQUtil;
 
@@ -79,9 +79,7 @@ public class ZeroMQUtil {
         root.setFrom(mEgID);
         root.setTs(TimeUtil.getUnixTimeStamp());
         heartPack = JSON.toJSONString(root);
-        if (DEBUG) {
-            Log.i(TAG, "getHeartPack: " + heartPack);
-        }
+        Logger.json(heartPack);
     }
 
     public void getHeartPack(String unixTimeStamp) {
@@ -90,9 +88,7 @@ public class ZeroMQUtil {
         root.setFrom(mEgID);
         root.setTs(unixTimeStamp);
         heartPack = JSON.toJSONString(root);
-        if (DEBUG) {
-            Log.i(TAG, "getHeartPack: " + heartPack);
-        }
+        Logger.json(heartPack);
     }
 
 
@@ -129,18 +125,12 @@ public class ZeroMQUtil {
         ZMQ.Socket subscriber0 = context0.socket(ZMQ.DEALER);
         try {
             boolean b = subscriber0.setIdentity(mEgID.getBytes());//FROM duodian
-            if (DEBUG) {
-                Log.i(TAG, "heartbeat: setIdentity " + b);
-            }
             if (!b) {
                 return;
             }
             boolean connect = subscriber0.connect(mAddr);// 注意，这里必须是服务器的IP地址或DNS Name
             if (!connect) {
                 subscriber0.connect(mAddr);
-            }
-            if (DEBUG) {
-                Log.i(TAG, "heartbeat: connect " + connect);
             }
             boolean sendMore = subscriber0.sendMore(FPSConfig.POS_SERVER);//LPS SERVER
             if (!sendMore) {
@@ -149,9 +139,6 @@ public class ZeroMQUtil {
             boolean send = subscriber0.send(heartPack);//MSG
             if (!send) {
                 return;
-            }
-            if (DEBUG) {
-                Log.i(TAG, "heartbeat: send " + send);
             }
             heartbeatFlag = true;
             String message = new String(subscriber0.recv(0));
@@ -207,29 +194,17 @@ public class ZeroMQUtil {
             if (!b) {
                 return false;
             }
-            if (DEBUG) {
-                Log.i(TAG, "sendPack: setIdentity " + b);
-            }
             boolean connect = subscriber1.connect(mAddr);// 注意，这里必须是服务器的IP地址或DNS Name
             if (!connect) {
                 return false;
-            }
-            if (DEBUG) {
-                Log.i(TAG, "sendPack: connect " + connect);
             }
             boolean sendMore = subscriber1.sendMore(FPSConfig.LPS_SERVER);//LPS SERVER
             if (!sendMore) {
                 return false;
             }
-            if (DEBUG) {
-                Log.i(TAG, "sendPack: sendMore " + sendMore);
-            }
             boolean send = subscriber1.send(urlPack);//MSG
             if (!send) {
                 return false;
-            }
-            if (DEBUG) {
-                Log.i(TAG, "sendPack: send " + send);
             }
             String message = new String(subscriber1.recv(0));
             if (!StringUtils.isEmpty(message)) {
@@ -270,8 +245,6 @@ public class ZeroMQUtil {
         content.setCapVideoUrl(capvideourl);
         root.setContent(content);
         urlPack = JSON.toJSONString(root);
-        if (DEBUG) {
-            Log.i(TAG, "getURLPack: " + urlPack);
-        }
+        Logger.json(urlPack);
     }
 }
