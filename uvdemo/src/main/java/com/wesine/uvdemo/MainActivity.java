@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.videoupload.TXUGCPublishTypeDef;
 import com.videoupload.UploadUtil;
 import com.wesine.device_sdk.service.HeartBeatService;
@@ -19,7 +20,7 @@ import com.wesine.device_sdk.vlclib.VlcClient;
 import com.wesine.device_sdk.vlclib.view.WesineGLSV;
 
 
-public class MainActivity extends AppCompatActivity implements BarcodeScanner.OnScanSuccessListener, CameraUtil.OnRecordListener, UploadUtil.OnPublishResultListener {
+public class MainActivity extends AppCompatActivity implements CameraUtil.OnRecordListener, UploadUtil.OnPublishResultListener {
 
     private static final String TAG = "MainActivity";
     private CameraView cameraView;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
 
     private WesineGLSV player;
     private VlcClient vlcClient;
-    private BarcodeScanner barcodeScanner;
     private UploadUtil uploadUtil;
     private boolean isRecord = false;
     private String recordPath;
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startServiceMSG();
-        barcodeScanner = new BarcodeScanner(this);
         player = (WesineGLSV) findViewById(R.id.player);
         cameraView = (CameraView) findViewById(R.id.cameraView);
         cameraUtil = CameraUtil.getCameraUtil();
@@ -94,18 +93,6 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
     }
 
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-//        return super.dispatchKeyEvent(event);
-        barcodeScanner.analysisKeyEvent(event);
-        return true;
-    }
-
-    @Override
-    public void onScanSuccess(String barcode) {
-        Toast.makeText(this, barcode, Toast.LENGTH_LONG).show();
-    }
-
     public void upload(View view) {
         if (isRecord) {
             uploadUtil.init(recordPath);
@@ -113,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
         } else {
             Toast.makeText(this, "record failed", Toast.LENGTH_SHORT).show();
         }
+        isRecord = false;
     }
 
     public void pause(View view) {
@@ -134,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements BarcodeScanner.On
 
     @Override
     public void onProgress(long uploadBytes, long totalBytes) {
-        Log.i(TAG, "onProgress: " + (int) (100 * uploadBytes / totalBytes));
+        Logger.d("onProgress: " + (int) (100 * uploadBytes / totalBytes));
+    }
+
+    @Override
+    public void onPublicCompele(String videoURL, String coverURL) {
+        Logger.d("videoURL: %s  coverURL: %s", videoURL, coverURL);
     }
 }

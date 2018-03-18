@@ -1,6 +1,9 @@
 package com.wesine.device_sdk.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -42,6 +45,42 @@ public class TimeUtil {
     public static String getDateString() {
         GregorianCalendar now = new GregorianCalendar();
         return mDateFormat.format(now.getTime());
+    }
+
+    /**
+     * get current date as String
+     *
+     * @return
+     */
+    public static String getDateString(Date time) {
+        return mDateFormat.format(time.getTime());
+    }
+
+    /**
+     * str get date
+     *
+     * @param str
+     * @return
+     */
+    public static Date stringToDate(String str) {
+        Date date = null;
+        try {
+            // Fri Feb 24 00:00:00 CST 2012
+            date = mDateFormat.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    public static Date getDate(int count) {
+        Calendar instance = Calendar.getInstance();
+        int year = instance.get(Calendar.YEAR);
+        int month = instance.get(Calendar.MONTH);
+        int day = instance.get(Calendar.DAY_OF_MONTH);
+        instance.set(year, month, day + count);
+        Date time = instance.getTime();
+        return time;
     }
 
     public static void main(String[] args) {

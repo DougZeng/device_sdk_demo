@@ -1,11 +1,9 @@
 package com.videoupload;
 
 
-import android.util.Log;
-
 import com.orhanobut.logger.Logger;
 import com.wesine.device_sdk.utils.Device;
-import com.wesine.device_sdk.utils.ZeroMQUtil;
+import com.wesine.device_sdk.utils.FileUtils;
 
 /**
  * Created by doug on 18-2-25.
@@ -85,11 +83,10 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
     }
 
     public interface OnPublishResultListener {
-//        void onSuccess(TXUGCPublishTypeDef.TXPublishResult result);
-//
-//        void onFailed();
 
         void onProgress(long uploadBytes, long totalBytes);
+
+        void onPublicCompele(String videoURL, String coverURL);
     }
 
 
@@ -101,8 +98,15 @@ public class UploadUtil implements TXUGCPublishTypeDef.ITXVideoPublishListener {
 
     @Override
     public void onPublishComplete(final TXUGCPublishTypeDef.TXPublishResult result) {
-//        Log.d(TAG, "onPublishComplete: " + result.retCode + " Msg:" + (result.retCode == 0 ? result.videoURL : result.descMsg));
         if (result.retCode == 0) {
+            onPublishResultListener.onPublicCompele(result.videoURL, result.coverURL);
+            if (mVideoPath != null) {
+                try {
+                    FileUtils.deleteFile(mVideoPath);
+                } catch (Exception e) {
+                    Logger.e(e.getMessage());
+                }
+            }
 //            zeroMQUtil.init("1001", "192.168.1.207", "9999");
 //            zeroMQUtil.getURLPack(result.videoURL, result.coverURL);
 //            TaskExecutor.start(new Runnable() {

@@ -8,19 +8,14 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.wesine.device_sdk.utils.Device;
 import com.wesine.device_sdk.utils.ZeroMQUtil;
-import com.wesine.device_sdk.utils.async.TaskExecutor;
-
-import java.util.Timer;
 
 /**
  * Created by doug on 18-2-27.
  */
 
 public class App extends Application {
-    private static final String TAG = "App";
     private static App instance;
     private ZeroMQUtil zeroMQUtil;
-    private Timer timer;
 
     private RefWatcher refWatcher;
 
@@ -56,34 +51,14 @@ public class App extends Application {
     }
 
 
-    private void heartBeat() {
-        if (timer != null) {
-            timer.cancel();
-        }
-        zeroMQUtil.getHeartPack();
-        timer = TaskExecutor.startTimerTask(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    zeroMQUtil.heartbeat();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 3000, 3 * 1000);
-
-    }
 
     @Override
     public void onLowMemory() {
-        timer.cancel();
         super.onLowMemory();
     }
 
     @Override
     public void onTerminate() {
-        timer.cancel();
         super.onTerminate();
     }
 

@@ -146,6 +146,7 @@ public class CameraUtil {
         if (mMuxer != null) {
             mMuxer.stopRecording();
             outputPath = mMuxer.getOutputPath();
+            onRecordListener.onRecordSuccess(outputPath);
             Logger.d("stopRecording: outputPath %s", outputPath);
 //            onRecordListener.onRecordSuccess(outputPath);
             mMuxer = null;
