@@ -1,8 +1,6 @@
 package com.wesine.device_sdk.utils;
 
 
-import android.util.Log;
-
 import com.alibaba.fastjson.JSON;
 import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
@@ -25,6 +23,7 @@ import java.util.Timer;
 public class ZeroMQUtil {
     private static final String TAG = "ZeroMQUtil";
     public static ZeroMQUtil mZeroMQUtil;
+    public static boolean initSuccess = false;
 
 //    private static ZMQ.Context context = null;
 //    private static ZMQ.Socket subscriber = null;
@@ -68,7 +67,7 @@ public class ZeroMQUtil {
         if (StringUtils.isEmpty(port)) {
             return;
         }
-
+        initSuccess = true;
         mAddr = String.format("tcp://%s:%s", ip, port);
         mEgID = egID;
     }
@@ -83,6 +82,9 @@ public class ZeroMQUtil {
     }
 
     public void getHeartPack(String unixTimeStamp) {
+        if (!initSuccess) {
+            return;
+        }
         Root root = new Root();
         root.setType(FPSConfig.CAPHEARTBEAT_TYPE);
         root.setFrom(mEgID);
@@ -119,6 +121,9 @@ public class ZeroMQUtil {
      * @return
      */
     public void heartbeat() {
+        if (!initSuccess) {
+            return;
+        }
         if (context0.isTerminated()) {
             context0 = ZMQ.context(1);
         }
@@ -169,6 +174,9 @@ public class ZeroMQUtil {
     }
 
     public void sendUploadResult(String capvideourl, String cappictureurl) {
+        if (!initSuccess) {
+            return;
+        }
         getURLPack(capvideourl, cappictureurl);
         TaskExecutor.start(new Runnable() {
             @Override
@@ -233,6 +241,9 @@ public class ZeroMQUtil {
                     }
             }*/
     public void getURLPack(String capvideourl, String cappictureurl) {
+        if (!initSuccess) {
+            return;
+        }
         if (StringUtils.isEmpty(capvideourl) || StringUtils.isEmpty(cappictureurl)) {
             return;
         }

@@ -27,7 +27,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +42,7 @@
 
         <service android:name="com.wesine.device_sdk.service.HeartBeatService" />
         <receiver android:name="com.wesine.device_sdk.service.AlarmReceiver" />
-        <service android:name="com.wesine.device_sdk.service.BackgroundTaskIntentService" />
+        <!--<service android:name="com.wesine.device_sdk.service.BackgroundTaskIntentService" />-->
 
     </application>
 

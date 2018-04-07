@@ -1,6 +1,5 @@
 package com.wesine.device_sdk.videouploadlib;
 
-import android.util.Log;
 
 import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;
@@ -153,12 +152,12 @@ public class CameraUtil {
             // you should not wait here
         }
         //TODO after stop recording start upload video to tencent cloud
-//        if (!StringUtils.isEmpty(outputPath)) {
-//            if (uploadUtilInstance != null) {
-//                uploadUtilInstance.init(outputPath);
-//                uploadUtilInstance.beginUpload();
-//            }
-//        }
+        if (!StringUtils.isEmpty(outputPath)) {
+            if (uploadUtilInstance != null) {
+                uploadUtilInstance.init(outputPath);
+                uploadUtilInstance.beginUpload();
+            }
+        }
     }
 
     public void addOnRecordListener(OnRecordListener onRecordListener) {

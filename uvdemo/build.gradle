@@ -8,8 +8,8 @@ android {
         applicationId "com.wesine.uvdemo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -23,7 +23,7 @@ android {
 
     sourceSets {
         main {
-            jni.srcDirs = []
+//            jni.srcDirs = []
             jniLibs.srcDirs = ['./libs/jni']
         }
     }
@@ -42,9 +42,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':device_sdk')
 //    compile(name: 'device_sdk-v1.0.0.0.2',ext: 'aar')
-    compile(name: 'libvlc-3.0.0-null', ext: 'aar')
+    implementation(name: 'libvlc-3.0.0-null', ext: 'aar')
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }

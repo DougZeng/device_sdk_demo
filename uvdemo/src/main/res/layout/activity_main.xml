@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -18,48 +19,53 @@
             android:text="record" />
 
         <Button
+            style="@style/BtnSyle"
             android:layout_height="wrap_content"
             android:onClick="stop"
-            style="@style/BtnSyle"
             android:text="stop" />
 
+
+
         <Button
+            style="@style/BtnSyle"
             android:layout_height="wrap_content"
             android:onClick="upload"
-            style="@style/BtnSyle"
-            android:text="upload" />
+            android:text="upload"
+            android:visibility="invisible" />
 
         <Button
             style="@style/BtnSyle"
             android:layout_height="wrap_content"
             android:onClick="resume"
-            android:text="resume" />
+            android:text="resume"
+            android:visibility="invisible" />
 
         <Button
             style="@style/BtnSyle"
             android:layout_height="wrap_content"
             android:onClick="pause"
-            android:text="pause" />
+            android:text="pause"
+            android:visibility="invisible" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_gravity="center">
 
 
         <com.wesine.device_sdk.videouploadlib.CameraView
             android:id="@+id/cameraView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" />
+            android:layout_width="450dp"
+            android:layout_height="800dp"
+            android:layout_centerInParent="true" />
 
         <com.wesine.device_sdk.vlclib.view.WesineGLSV
             android:id="@+id/player"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
-    </LinearLayout>
+            android:layout_weight="1"
+            android:visibility="gone" />
+    </RelativeLayout>
 
 </LinearLayout>

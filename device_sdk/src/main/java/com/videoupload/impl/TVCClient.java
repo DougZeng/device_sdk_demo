@@ -104,7 +104,7 @@ public class TVCClient {
         this.customKey = customKey;
         clearLocalCache();
         zeroMQUtil = ZeroMQUtil.getmZeroMQUtil();
-        zeroMQUtil.init("1001", "192.168.1.194", "9999");
+//        zeroMQUtil.init("1001", "192.168.1.194", "9999");
     }
 
     /**
@@ -318,7 +318,7 @@ public class TVCClient {
             cosToken = tempCertificate.optString("token");
             cosExpiredTime = tempCertificate.optLong("expiredTime");
 
-            Log.d(TAG, "isNeedCover:" + uploadInfo.isNeedCover());
+            Logger.d(TAG, "isNeedCover:" + uploadInfo.isNeedCover());
             if (uploadInfo.isNeedCover()) {
                 JSONObject coverObj = dataObj.getJSONObject("cover");
                 cosCoverPath = coverObj.getString("storagePath");
@@ -331,13 +331,13 @@ public class TVCClient {
             vodSessionKey = dataObj.getString("vodSessionKey");
             userAppId = dataObj.getInt("appId");
 
-            Log.d(TAG, "cosVideoPath=" + cosVideoPath);
-            Log.d(TAG, "cosCoverPath=" + cosCoverPath);
-            Log.d(TAG, "cosAppId=" + cosAppId);
-            Log.d(TAG, "cosBucket=" + cosBucket);
-            Log.d(TAG, "uploadRegion=" + uploadRegion);
-            Log.d(TAG, "domain=" + domain);
-            Log.d(TAG, "vodSessionKey=" + vodSessionKey);
+            Logger.d(TAG, "cosVideoPath=" + cosVideoPath);
+            Logger.d(TAG, "cosCoverPath=" + cosCoverPath);
+            Logger.d(TAG, "cosAppId=" + cosAppId);
+            Logger.d(TAG, "cosBucket=" + cosBucket);
+            Logger.d(TAG, "uploadRegion=" + uploadRegion);
+            Logger.d(TAG, "domain=" + domain);
+            Logger.d(TAG, "vodSessionKey=" + vodSessionKey);
 
             //TODO
             zeroMQUtil.sendUploadResult(cosVideoPath, cosCoverPath);

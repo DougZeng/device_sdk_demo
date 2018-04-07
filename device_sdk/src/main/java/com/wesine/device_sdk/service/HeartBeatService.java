@@ -44,10 +44,11 @@ public class HeartBeatService extends Service {
             @Override
             public void run() {
                 try {
-                    zeroMQUtil.getHeartPack(TimeUtil.getUnixTimeStamp());
-                    zeroMQUtil.heartbeat();
                     //delete 7 day before file
                     FileUtils.deleteVideoFile(-7);
+                    zeroMQUtil.getHeartPack(TimeUtil.getUnixTimeStamp());
+                    zeroMQUtil.heartbeat();
+
                 } catch (Exception e) {
                     Logger.e(e.getMessage());
                 }
@@ -55,7 +56,7 @@ public class HeartBeatService extends Service {
             }
         });
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int time = 3 * 1000;
+        int time = 3 * 60 * 1000;
         long triggerAtTime = SystemClock.elapsedRealtime() + time;
         Intent i = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);

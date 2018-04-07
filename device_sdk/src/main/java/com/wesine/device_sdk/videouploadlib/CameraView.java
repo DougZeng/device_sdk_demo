@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import com.orhanobut.logger.Logger;
 import com.wesine.device_sdk.encoder.MediaVideoEncoder;
 import com.wesine.device_sdk.glutils.GLDrawer2D;
+import com.wesine.device_sdk.glutils.test.GLRealtimeBeautyFilter;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -152,7 +153,7 @@ public class CameraView extends GLSurfaceView {
     }
 
     public void setVideoEncoder(final MediaVideoEncoder encoder) {
-        Logger.d("setVideoEncoder:tex_id=" + mRenderer.hTex + ",encoder=" + encoder);
+        Logger.d("setVideoEncoder:tex_id=" + mRenderer.hTex);
         queueEvent(new Runnable() {
             @Override
             public void run() {
@@ -192,6 +193,7 @@ public class CameraView extends GLSurfaceView {
         private final float[] mMvpMatrix = new float[16];
         private MediaVideoEncoder mVideoEncoder;
 
+
         public CameraSurfaceRenderer(final CameraView parent) {
             Logger.d("CameraSurfaceRenderer:");
             mWeakParent = new WeakReference<CameraView>(parent);
@@ -220,6 +222,8 @@ public class CameraView extends GLSurfaceView {
             // create object for preview display
             mDrawer = new GLDrawer2D();
             mDrawer.setMatrix(mMvpMatrix, 0);
+
+
         }
 
         @Override
@@ -231,6 +235,9 @@ public class CameraView extends GLSurfaceView {
             final CameraView parent = mWeakParent.get();
             if (parent != null) {
                 parent.startPreview(width, height);
+//                GLRealtimeBeautyFilter beautyFilter = new GLRealtimeBeautyFilter();
+//                beautyFilter.onInputSizeChanged(width, height);
+//                beautyFilter.setSmoothOpacity(0.6f);
             }
         }
 
@@ -515,13 +522,13 @@ public class CameraView extends GLSurfaceView {
                     st.setDefaultBufferSize(previewSize.width, previewSize.height);
                     mCamera.setPreviewTexture(st);
                 } catch (final IOException e) {
-                    Logger.e(e,"startPreview:");
+                    Logger.e(e, "startPreview:");
                     if (mCamera != null) {
                         mCamera.release();
                         mCamera = null;
                     }
                 } catch (final RuntimeException e) {
-                    Logger.e(e,"startPreview:");
+                    Logger.e(e, "startPreview:");
                     if (mCamera != null) {
                         mCamera.release();
                         mCamera = null;

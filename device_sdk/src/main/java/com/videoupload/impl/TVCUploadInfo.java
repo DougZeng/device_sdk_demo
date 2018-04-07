@@ -1,6 +1,5 @@
 package com.videoupload.impl;
 
-import android.util.Log;
 
 import com.orhanobut.logger.Logger;
 import com.tencent.cos.xml.utils.StringUtils;

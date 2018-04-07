@@ -183,13 +183,13 @@ public class EGLBase {	// API >= 17
         if (surface == null || surface == EGL14.EGL_NO_SURFACE) {
             final int error = EGL14.eglGetError();
             if (error == EGL14.EGL_BAD_NATIVE_WINDOW) {
-                Log.e(TAG, "makeCurrent:returned EGL_BAD_NATIVE_WINDOW.");
+				Logger.e(TAG, "makeCurrent:returned EGL_BAD_NATIVE_WINDOW.");
             }
             return false;
         }
         // attach EGL renderring context to specific EGL window surface
         if (!EGL14.eglMakeCurrent(mEglDisplay, surface, surface, mEglContext)) {
-            Log.w(TAG, "eglMakeCurrent:" + EGL14.eglGetError());
+			Logger.w(TAG, "eglMakeCurrent:" + EGL14.eglGetError());
             return false;
         }
         return true;
@@ -198,7 +198,7 @@ public class EGLBase {	// API >= 17
 	private void makeDefault() {
 		Logger.d("makeDefault:");
         if (!EGL14.eglMakeCurrent(mEglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)) {
-            Log.w("TAG", "makeDefault" + EGL14.eglGetError());
+			Logger.w("TAG", "makeDefault" + EGL14.eglGetError());
         }
 	}
 
@@ -228,14 +228,14 @@ public class EGLBase {	// API >= 17
 		Logger.d("destroyContext:");
 
         if (!EGL14.eglDestroyContext(mEglDisplay, mEglContext)) {
-            Log.e("destroyContext", "display:" + mEglDisplay + " context: " + mEglContext);
-            Log.e(TAG, "eglDestroyContex:" + EGL14.eglGetError());
+            Logger.e("destroyContext", "display:" + mEglDisplay + " context: " + mEglContext);
+			Logger.e(TAG, "eglDestroyContex:" + EGL14.eglGetError());
         }
         mEglContext = EGL14.EGL_NO_CONTEXT;
         if (mDefaultContext != EGL14.EGL_NO_CONTEXT) {
 	        if (!EGL14.eglDestroyContext(mEglDisplay, mDefaultContext)) {
-	            Log.e("destroyContext", "display:" + mEglDisplay + " context: " + mDefaultContext);
-	            Log.e(TAG, "eglDestroyContex:" + EGL14.eglGetError());
+				Logger.e("destroyContext", "display:" + mEglDisplay + " context: " + mDefaultContext);
+				Logger.e(TAG, "eglDestroyContex:" + EGL14.eglGetError());
 	        }
 	        mDefaultContext = EGL14.EGL_NO_CONTEXT;
         }
@@ -274,9 +274,9 @@ public class EGLBase {	// API >= 17
 	            throw new RuntimeException("surface was null");
 	        }
 		} catch (final IllegalArgumentException e) {
-			Log.e(TAG, "createOffscreenSurface", e);
+			Logger.e(TAG, "createOffscreenSurface", e);
 		} catch (final RuntimeException e) {
-			Log.e(TAG, "createOffscreenSurface", e);
+			Logger.e(TAG, "createOffscreenSurface", e);
 		}
 		return result;
     }

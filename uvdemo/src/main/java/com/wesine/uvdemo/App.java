@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.wesine.device_sdk.utils.Device;
@@ -42,6 +44,12 @@ public class App extends Application {
         Device.init(this);
 //        init();
 //        heartBeat();
+        Logger.addLogAdapter(new AndroidLogAdapter() {
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
     }
 
 

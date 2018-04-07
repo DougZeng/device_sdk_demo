@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName '1.0.0.0.2'
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -56,13 +56,13 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs/upload')
-    compile files('libs/AutoStartlibrary.jar')
-    compile files('libs/jeromq-0.4.3.jar')
-    compile files('libs/cpyrt.jar')
-    compile(name: 'libvlc-3.0.0-null', ext: 'aar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs/upload')
+    implementation files('libs/AutoStartlibrary.jar')
+    implementation files('libs/jeromq-0.4.3.jar')
+    implementation files('libs/cpyrt.jar')
+    implementation(name: 'libvlc-3.0.0-null', ext: 'aar')
     implementation 'com.android.support:appcompat-v7:27.1.0'
-    compile 'com.orhanobut:logger:2.1.1'
+    compile 'com.orhanobut:logger:2.2.0'
 }
 
 task copyAAR(type: Copy) {
@@ -75,4 +75,3 @@ task copyAAR(type: Copy) {
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn(copyAAR)
 }
-

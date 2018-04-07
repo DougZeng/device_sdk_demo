@@ -121,17 +121,5 @@ public class FileUtils {
 
     public static void main(String[] args) {
         deleteVideoFile(-7);
-//  // 删除单个文件
-//  String file = "c:/test/test.txt";
-//  DeleteFileUtil.deleteFile(file);
-//  System.out.println();
-        // 删除一个目录
-        String dir = "D:/home/web/upload/upload/files";
-        FileUtils.deleteDirectory(dir);
-//  System.out.println();
-//  // 删除文件
-//  dir = "c:/test/test0";
-//  DeleteFileUtil.delete(dir);
-
     }
 }

@@ -215,6 +215,7 @@ public class TXUGCPublish {
             }
             fOut = new FileOutputStream(f);
             thumb.compress(Bitmap.CompressFormat.JPEG, 70, fOut);
+            thumb.recycle();
             fOut.flush();
             fOut.close();
         } catch (Exception e) {
