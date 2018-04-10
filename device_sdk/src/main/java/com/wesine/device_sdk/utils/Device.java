@@ -70,9 +70,9 @@ public final class Device {
      * @param context context
      */
     public static void init(final Context context) {
-//        if (!DeviceUtil.isWesineDevice()) {
-//            throw new UnsupportedOperationException("The device is illegal...");
-//        }
+        if (!DeviceUtil.isWesineDevice()) {
+            throw new UnsupportedOperationException("The device is illegal...");
+        }
         Device.sApplication = ((Application) context.getApplicationContext());
         Device.sApplication.registerActivityLifecycleCallbacks(mCallbacks);
     }

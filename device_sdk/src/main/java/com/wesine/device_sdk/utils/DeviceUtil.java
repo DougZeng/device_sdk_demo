@@ -18,7 +18,9 @@ public final class DeviceUtil {
 
     public static boolean isWesineDevice() {
         try {
-            return CpyrtUtil.getCpyrtUtil().validateSerial(Build.SERIAL);
+            String serial = Build.SERIAL;
+            String serialno = serial.replace(" ", "").toUpperCase();
+            return CpyrtUtil.getCpyrtUtil().validateSerial(serialno);
         } catch (Exception e) {
             e.printStackTrace();
         }
