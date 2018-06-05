@@ -14,7 +14,8 @@ import com.videoupload.UploadUtil;
 import com.wesine.device_sdk.service.HeartBeatService;
 import com.wesine.device_sdk.videouploadlib.CameraUtil;
 import com.wesine.device_sdk.videouploadlib.CameraView;
-
+import com.wesine.device_sdk.vlclib.VlcClient;
+import com.wesine.device_sdk.vlclib.view.WesineGLSV;
 
 
 public class MainActivity extends AppCompatActivity implements CameraUtil.OnRecordListener, UploadUtil.OnPublishResultListener {
@@ -32,26 +33,30 @@ public class MainActivity extends AppCompatActivity implements CameraUtil.OnReco
             if (msg.what == 1) {
                 Logger.v("cameraUtil", "onResume");
                 cameraUtil.onResume();
-                handler.sendEmptyMessageDelayed(2, 3000);
+                handler.sendEmptyMessageDelayed(2, 10000);
             } else if (msg.what == 2) {
                 Logger.v("cameraUtil", "onPause");
                 cameraUtil.onPause();
-                handler.sendEmptyMessageDelayed(1, 3000);
+                handler.sendEmptyMessageDelayed(1, 10000);
             }
         }
     };
+    private WesineGLSV player;
+    private VlcClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        startServiceMSG();
+//        startServiceMSG();
+
+
         cameraView = (CameraView) findViewById(R.id.cameraView);
-
-
         cameraUtil = CameraUtil.getCameraUtil();
         cameraUtil.setCameraView(cameraView);
+
+
 //        cameraUtil.setVideoSize(1280, 720);
 
 //        uploadUtil = UploadUtil.getUploadUtilInstance();
@@ -59,6 +64,13 @@ public class MainActivity extends AppCompatActivity implements CameraUtil.OnReco
 
 
 //        handler.sendEmptyMessageDelayed(1, 3000);
+
+//        player = (WesineGLSV) findViewById(R.id.player);
+//        client = VlcClient.getVlcClient();
+//        client.init(this,"");
+//        client.setWesineGLSV(player);
+//        client.onCreat();
+
     }
 
 
@@ -73,14 +85,20 @@ public class MainActivity extends AppCompatActivity implements CameraUtil.OnReco
 
     @Override
     protected void onResume() {
+
         cameraUtil.onResume();
         cameraUtil.addOnRecordListener(this);
+//        client.onResume();
+
+
         super.onResume();
     }
 
     @Override
     protected void onPause() {
+
         cameraUtil.onPause();
+//        client.onPause();
         super.onPause();
     }
 

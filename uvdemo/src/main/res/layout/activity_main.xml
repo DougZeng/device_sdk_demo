@@ -7,10 +7,10 @@
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible">
 
         <Button
             style="@style/BtnSyle"
@@ -23,7 +23,6 @@
             android:layout_height="wrap_content"
             android:onClick="stop"
             android:text="stop" />
-
 
 
         <Button
@@ -58,14 +57,15 @@
             android:id="@+id/cameraView"
             android:layout_width="450dp"
             android:layout_height="800dp"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            />
 
         <com.wesine.device_sdk.vlclib.view.WesineGLSV
             android:id="@+id/player"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:visibility="gone" />
+            android:layout_width="450dp"
+            android:layout_height="800dp"
+            android:visibility="gone"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
 </LinearLayout>
