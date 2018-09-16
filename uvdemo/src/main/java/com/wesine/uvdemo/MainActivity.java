@@ -6,16 +6,16 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
-import com.orhanobut.logger.Logger;
 import com.videoupload.UploadUtil;
 import com.wesine.device_sdk.service.HeartBeatService;
 import com.wesine.device_sdk.videouploadlib.CameraUtil;
 import com.wesine.device_sdk.videouploadlib.CameraView;
-import com.wesine.device_sdk.vlclib.VlcClient;
-import com.wesine.device_sdk.vlclib.view.WesineGLSV;
+//import com.wesine.device_sdk.vlclib.VlcClient;
+//import com.wesine.device_sdk.vlclib.view.WesineGLSV;
 
 
 public class MainActivity extends AppCompatActivity implements CameraUtil.OnRecordListener, UploadUtil.OnPublishResultListener {
@@ -31,18 +31,18 @@ public class MainActivity extends AppCompatActivity implements CameraUtil.OnReco
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 1) {
-                Logger.v("cameraUtil", "onResume");
+                Log.d("cameraUtil", "onResume");
                 cameraUtil.onResume();
                 handler.sendEmptyMessageDelayed(2, 10000);
             } else if (msg.what == 2) {
-                Logger.v("cameraUtil", "onPause");
+                Log.d("cameraUtil", "onPause");
                 cameraUtil.onPause();
-                handler.sendEmptyMessageDelayed(1, 10000);
+                handler.sendEmptyMessageDelayed(1, 1000);
             }
         }
     };
-    private WesineGLSV player;
-    private VlcClient client;
+//    private WesineGLSV player;
+//    private VlcClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements CameraUtil.OnReco
 //        uploadUtil.addResultListener(this);
 
 
-//        handler.sendEmptyMessageDelayed(1, 3000);
+
 
 //        player = (WesineGLSV) findViewById(R.id.player);
 //        client = VlcClient.getVlcClient();
@@ -155,5 +155,10 @@ public class MainActivity extends AppCompatActivity implements CameraUtil.OnReco
     }
 
     public void upload(View view) {
+    }
+
+    public void cycleOnOff(View view) {
+        handler.sendEmptyMessageDelayed(1, 3000);
+        view.setClickable(false);
     }
 }

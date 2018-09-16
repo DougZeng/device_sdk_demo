@@ -26,10 +26,12 @@ public final class DeviceUtil {
                 serialno = serialno.substring(0, 10);
             }
             Log.e("serial", serialno);
-            return CpyrtUtil.getCpyrtUtil().validateSerial(serialno);
+            return CpyrtUtil.getCpyrtUtil().validateSerial(serialno, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
+
 }

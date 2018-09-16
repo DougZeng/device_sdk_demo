@@ -21,12 +21,12 @@ android {
         }
     }
 
-    sourceSets {
-        main {
+//    sourceSets {
+//        main {
 //            jni.srcDirs = []
-            jniLibs.srcDirs = ['./libs/jni']
-        }
-    }
+//            jniLibs.srcDirs = ['./libs/jni']
+//        }
+//    }
 }
 
 repositories {
@@ -41,7 +41,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':device_sdk')
-//    compile(name: 'device_sdk-v1.0.0.0.2',ext: 'aar')
+
+
+
+//    compile(name: 'device_sdk-1.0.0.0.8',ext: 'aar')
     implementation(name: 'libvlc-3.0.0-null', ext: 'aar')
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'

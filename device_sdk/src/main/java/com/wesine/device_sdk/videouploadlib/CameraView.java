@@ -3,6 +3,7 @@ package com.wesine.device_sdk.videouploadlib;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.hardware.Camera.PreviewCallback;
 import android.opengl.EGL14;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -24,6 +25,7 @@ import com.wesine.device_sdk.glutils.test.GLRealtimeBeautyFilter;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -222,7 +224,8 @@ public class CameraView extends GLSurfaceView {
             // create object for preview display
             mDrawer = new GLDrawer2D();
             mDrawer.setMatrix(mMvpMatrix, 0);
-
+//            Logger.d("mMvpMatrix");
+//            Logger.d(Arrays.toString(mMvpMatrix));
 
         }
 
@@ -335,6 +338,11 @@ public class CameraView extends GLSurfaceView {
                 mSTexture.getTransformMatrix(mStMatrix);
             }
             // draw to preview screen
+            if (mDrawer == null) {
+                return;
+            }
+            Logger.d("mMvpMatrix");
+            Logger.d(Arrays.toString(mMvpMatrix));
             mDrawer.draw(hTex, mStMatrix);
             flip = !flip;
             if (flip) {    // ~30fps
@@ -521,6 +529,7 @@ public class CameraView extends GLSurfaceView {
                     final SurfaceTexture st = parent.getSurfaceTexture();
                     st.setDefaultBufferSize(previewSize.width, previewSize.height);
                     mCamera.setPreviewTexture(st);
+                    mCamera.setPreviewCallback(callback);
                 } catch (final IOException e) {
                     Logger.e(e, "startPreview:");
                     if (mCamera != null) {
@@ -537,9 +546,18 @@ public class CameraView extends GLSurfaceView {
                 if (mCamera != null) {
                     // start camera preview display
                     mCamera.startPreview();
+                    mCamera.setPreviewCallback(callback);
                 }
             }
         }
+
+        PreviewCallback callback = new PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                Log.d(TAG, "onPreviewFrame: ");
+                Log.d(TAG, Arrays.toString(data));
+            }
+        };
 
         private static Camera.Size getClosestSupportedSize(List<Camera.Size> supportedSizes, final int requestedWidth, final int requestedHeight) {
             return (Camera.Size) Collections.min(supportedSizes, new Comparator<Camera.Size>() {

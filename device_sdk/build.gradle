@@ -47,6 +47,13 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    sourceSets {
+        main {
+            jniLibs.srcDir 'libs'
+            jni.srcDirs = []
+        }
+    }
 }
 
 repositories {
@@ -56,13 +63,21 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs/upload')
+    compile fileTree(dir: new File(buildDir, 'libs'), include: '*.jar')
+//    implementation fileTree(include: ['*.jar'], dir: 'libs/upload')
     implementation files('libs/AutoStartlibrary.jar')
     implementation files('libs/jeromq-0.4.3.jar')
-    implementation files('libs/cpyrt.jar')
     implementation(name: 'libvlc-3.0.0-null', ext: 'aar')
     implementation 'com.android.support:appcompat-v7:27.1.0'
     compile 'com.orhanobut:logger:2.2.0'
+    implementation files('libs/ZYInterface.jar')
+    implementation files('libs/cpyrt-1.18.0723.jar')
+    implementation files('libs/cos-xml-android-sdk-1.2.3.jar')
+    implementation files('libs/fastjson-1.1.60.android.jar')
+    implementation files('libs/okhttp-3.8.1.jar')
+    implementation files('libs/okio-1.13.0.jar')
+    implementation files('libs/qcloud-core-1.2.1.1.jar')
+    implementation files('libs/xstream-1.4.7.jar')
 }
 
 task copyAAR(type: Copy) {
@@ -74,4 +89,29 @@ task copyAAR(type: Copy) {
 }
 tasks.withType(JavaCompile) {
     compileTask -> compileTask.dependsOn(copyAAR)
+}
+
+def repo = new File(rootDir, "repository")
+
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository url: "file://${repo.absolutePath}"
+            pom.version = versionName
+            pom.groupId = 'com.wesine'
+            pom.artifactId = 'device_sdk'
+            pom.project {
+                inceptionYear '2018'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
 }
